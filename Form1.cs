@@ -59,6 +59,7 @@ namespace LoveStringH
 
             cb_escapeStyle.DisplayMember = "name";
             cb_encoding_SelectedIndexChanged(null, null);
+
         }
 
         private void tb_main_TextChanged(object sender, EventArgs e) {
@@ -168,6 +169,10 @@ namespace LoveStringH
 
         private void cb_escapeStyle_SelectedIndexChanged(object sender, EventArgs e) {
             tb_main_TextChanged(sender, e);
+        }
+
+        private void nud_fontsize_ValueChanged(object sender, EventArgs e) {
+            tb_main.Font = new Font("宋体", (float)nud_fontsize.Value);
         }
     }
 }
