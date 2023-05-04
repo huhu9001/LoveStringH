@@ -60,6 +60,8 @@ namespace LoveStringH
             cb_escapeStyle.DisplayMember = "name";
             cb_encoding_SelectedIndexChanged(null, null);
 
+            cb_transliterator.DataSource = TransliteratorItems;
+            cb_transliterator.DisplayMember = "name";
         }
 
         private void tb_main_TextChanged(object sender, EventArgs e) {
