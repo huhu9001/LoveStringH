@@ -1,59 +1,55 @@
-﻿namespace LoveStringH {
-    public class TransliteratorCyrillic : Transliterator {
-        public override string GetTranslit(string s) {
-            switch (s) {
-                default: return s;
-                case "A": return "\u0410"; case "a": return "\u0430";
-                case "B": return "\u0411"; case "b": return "\u0431";
-                case "V": return "\u0412"; case "v": return "\u0432";
-                case "G": return "\u0413"; case "g": return "\u0433";
-                case "D": return "\u0414"; case "d": return "\u0434";
-                case "YE": case "Ye": return "\u0415"; case "ye": return "\u0435";
-                case "Zh": return "\u0416"; case "zh": return "\u0436";
-                case "Z": return "\u0417"; case "z": return "\u0437";
-                case "I": return "\u0418"; case "i": return "\u0438";
-                case "J": return "\u0419"; case "j": return "\u0439";
-                case "K": return "\u041A"; case "k": return "\u043A";
-                case "L": return "\u041B"; case "l": return "\u043B";
-                case "M": return "\u041C"; case "m": return "\u043C";
-                case "N": return "\u041D"; case "n": return "\u043D";
-                case "O": return "\u041E"; case "o": return "\u043E";
-                case "P": return "\u041F"; case "p": return "\u043F";
-                case "R": return "\u0420"; case "r": return "\u0440";
-                case "S": return "\u0421"; case "s": return "\u0441";
-                case "T": return "\u0422"; case "t": return "\u0442";
-                case "U": return "\u0423"; case "u": return "\u0443";
-                case "F": return "\u0424"; case "f": return "\u0444";
-                case "KH": case "Kh": case "H": return "\u0425"; case "kh": case "h": return "\u0445";
-                case "C": case "TS": case "Ts": return "\u0426"; case "c": case "ts": return "\u0446";
-                case "CH": case "Ch": return "\u0427";  case "ch": return "\u0447";
-                case "SH": case "Sh": return "\u0428"; case "sh": return "\u0448";
-                case "SHCH": case "Shch": return "\u0429"; case "shch": return "\u0449";
-                case "\"": return "\u044A";
-                case "Y": return "\u042B"; case "y": return "\u044B";
-                case "\'": return "\u044C";
-                case "E": return "\u042D"; case "e": return "\u044D";
-                case "YU": case "Yu": return "\u042E"; case "yu": return "\u044E";
-                case "YA": case "Ya": return "\u042F"; case "ya": return "\u044F";
-                case "YO": case "Yo": return "\u0401"; case "yo": return "\u0451";
-            }
-        }
+﻿using System.Collections.Generic;
 
-        public override int GetStopper(string s) {
-            switch (s) {
-                default: break;
-                case "Y": case "y":
-                case "Z": case "z":
-                case "K": case "k":
-                case "T": case "t":
-                case "C": case "c":
-                case "S": case "s":
-                case "SH": case "Sh": case "sh":
-                case "SHC": case "Shc": case "shc": return 0;
-            }
-            if (s.Length >= 4 && GetTranslit(s.Substring(0, 4)).Length == 1) return 4;
-            if (s.Length >= 2 && GetTranslit(s.Substring(0, 2)).Length == 1) return 2;
-            return 1;
+namespace LoveStringH {
+    public class TransliteratorCyrillic : Transliterator {
+        public TransliteratorCyrillic() {
+            tData = new RegexItem[] {
+                new RegexItem("....", new Dictionary<string, string> {
+                    { "SHCH", "\u0429" }, { "Shch", "\u0429" }, { "shch", "\u0449" },
+                }),
+                new RegexItem("..", new Dictionary<string, string> {
+                    { "YE", "\u0415" }, { "Ye", "\u0415" }, { "ye", "\u0435" },
+                    { "ZH", "\u0416" }, { "Zh", "\u0416" }, { "zh", "\u0436" },
+                    { "KH", "\u0425" }, { "Kh", "\u0425" }, { "kh", "\u0445" },
+                    { "TS", "\u0426" }, { "Ts", "\u0426" }, { "ts", "\u0446" },
+                    { "CH", "\u0427" }, { "Ch", "\u0427" }, { "ch", "\u0447" },
+                    { "SH", "\u0428" }, { "Sh", "\u0428" }, { "sh", "\u0448" },
+                
+                    { "YU", "\u042E" }, { "Yu", "\u042E" }, { "yu", "\u044E" },
+                    { "YA", "\u042F" }, { "Ya", "\u042F" }, { "ya", "\u044F" },
+                    { "YO", "\u0401" }, { "Yo", "\u0401" }, { "yo", "\u0451" },
+                }),
+                new RegexItem(".", new Dictionary<string, string> {
+                    { "A", "\u0410" }, { "a", "\u0430" },
+                    { "B", "\u0411" }, { "b", "\u0431" },
+                    { "V", "\u0412" }, { "v", "\u0432" },
+                    { "G", "\u0413" }, { "g", "\u0433" },
+                    { "D", "\u0414" }, { "d", "\u0434" },
+                    { "Z", "\u0417" }, { "z", "\u0437" },
+                    { "I", "\u0418" }, { "i", "\u0438" },
+                    { "J", "\u0419" }, { "j", "\u0439" },
+                    { "K", "\u041A" }, { "k", "\u043A" },
+                    { "L", "\u041B" }, { "l", "\u043B" },
+                    { "M", "\u041C" }, { "m", "\u043C" },
+                    { "N", "\u041D" }, { "n", "\u043D" },
+                    { "O", "\u041E" }, { "o", "\u043E" },
+                    { "P", "\u041F" }, { "p", "\u043F" },
+                    { "R", "\u0420" }, { "r", "\u0440" },
+                    { "S", "\u0421" }, { "s", "\u0441" },
+                    { "T", "\u0422" }, { "t", "\u0442" },
+                    { "U", "\u0423" }, { "u", "\u0443" },
+                    { "F", "\u0424" }, { "f", "\u0444" },
+                    { "H", "\u0425" }, { "h", "\u0445" },
+                    { "C", "\u0426" }, { "c", "\u0446" },
+                
+                    { "\"", "\u044A" },
+                    { "Y", "\u042B" }, { "y", "\u044B" },
+                    { "\'", "\u044C" },
+                    { "E", "\u042D" }, { "e", "\u044D" },
+
+                    { "/", "\u0301" },
+                }),
+            };
         }
     }
 }

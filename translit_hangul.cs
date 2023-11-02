@@ -1,31 +1,103 @@
 ﻿using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace LoveStringH {
     public class TransliteratorHangul : Transliterator {
-        public override string GetTranslit(string s) {
-            s = s.ToLower();
+        const string pat_initial_2 = "kk|tt|pp|ss|jj|ch";
+        const string pat_initial_1 = "[gkndtrlmbpsjch]";
+        const string pat_initial = pat_initial_2 + "|" + pat_initial_1 + "|";
+        const string pat_median = "ae?|(?<![yw])(?:eu|ui|o[ei])|eo?|i|o|(?<![w])u";
+        const string pat_coda_2 = "k[ksh]|n[jhg]|th|l[kgmbstph]|p[sh]|ss|ch";
+        const string pat_coda_1 = pat_initial_1;
+        const string pat_coda = pat_coda_2 + "|" + pat_coda_1 + "|";
+        const string pat_jamo = "n[ntsz]|l[xdzq]|lps|m[psz]|ps?[kt]|p[ct]h|s[kntp]|sch|ng[qsz]|fh|hh|[wfvzyq]|";
 
-            Match m = Regex.Match(s, "^([hgkndtmbpsjcrl]{0,2})([aeiouyw]{1,3})([hgkndtmbpsjcrl]{0,2})'?$");
-            if (!m.Success) switch (s) {
-                    default: return s;
-                    case "h": return "ㅎ";
-                    case "g": return "ㄱ";
-                    case "k": return "ㅋ";
-                    case "n": return "ㄴ";
-                    case "d": return "ㄷ";
-                    case "t": return "ㅌ";
-                    case "m": return "ㅁ";
-                    case "b": return "ㅂ";
-                    case "p": return "ㅍ";
-                    case "s": return "ㅅ";
-                    case "j": return "ㅈ";
-                    case "c": case "ch": return "ㅊ";
-                    case "r": case "l": return "ㄹ";
-                }
+        public TransliteratorHangul() {
+            tData = new RegexItem[] {
+                new RegexItem(string.Concat("(", pat_initial, ")([yw]?(?:", pat_median, "))(l)(?=[yw]?(?:", pat_median,"))"), GetSyllable),
+                new RegexItem(string.Concat("(", pat_initial, ")([yw]?(?:", pat_median, "))(?=(?:", pat_initial_2, "|", pat_initial_1, ")[yw]?(?:", pat_median,"))"), GetSyllable),
+                new RegexItem(string.Concat("(", pat_initial, ")([yw]?(?:", pat_median, "))(", pat_coda_1, ")(?=(?:", pat_initial_2, "|", pat_initial_1, ")[yw]?(?:", pat_median,"))"), GetSyllable),
+                new RegexItem(string.Concat("(", pat_initial, ")([yw]?(?:", pat_median, "))(", pat_coda, ")'?"), GetSyllable),
+                new RegexItem("...", new Dictionary<string, string> {
+                    { "lps", "ㅫ" },
+                    { "psk", "ㅴ" },
+                    { "pst", "ㅵ" },
+                    { "pch", "ㅶ" },
+                    { "pth", "ㅷ" },
+                    { "sch", "ㅾ" },
+                    { "ngq", "ㆁ" },
+                    { "ngs", "ㆂ" },
+                    { "ngz", "ㆃ" },
+                }),
+                new RegexItem("..", new Dictionary<string, string> {
+                    { "kk", "ㄲ" },
+                    { "tt", "ㄸ" },
+                    { "pp", "ㅃ" },
+                    { "ss", "ㅆ" },
+                    { "ng", "ㅇ" },
+                    { "jj", "ㅉ" },
+                    { "ch", "ㅊ" },
 
-            int i_initial;
+                    { "ks", "ㄳ" },
+                    { "nj", "ㄵ" },
+                    { "nh", "ㄶ" },
+                    { "lk", "ㄺ" }, { "lg", "ㄺ" },
+                    { "lm", "ㄻ" },
+                    { "lb", "ㄼ" },
+                    { "ls", "ㄽ" },
+                    { "lt", "ㄾ" },
+                    { "lp", "ㄿ" },
+                    { "lh", "ㅀ" },
+                    { "ps", "ㅄ" },
+                
+                    { "nn", "ㅥ" },
+                    { "nt", "ㅦ" },
+                    { "ns", "ㅧ" },
+                    { "nz", "ㅨ" },
+                    { "lx", "ㅩ" },
+                    { "ld", "ㅪ" },
+                    { "lz", "ㅬ" },
+                    { "lq", "ㅭ" },
+                    { "mp", "ㅮ" },
+                    { "ms", "ㅯ" },
+                    { "mz", "ㅰ" },
+                    { "pk", "ㅲ" },
+                    { "pt", "ㅳ" },
+                    { "sk", "ㅺ" },
+                    { "sn", "ㅻ" },
+                    { "st", "ㅼ" },
+                    { "sp", "ㅽ" },
+                    { "fh", "ㆄ" },
+                    { "hh", "ㆅ" },
+                }),
+                new RegexItem(".", new Dictionary<string, string> {
+                    { "g", "ㄱ" },
+                    { "n", "ㄴ" },
+                    { "d", "ㄷ" },
+                    { "r", "ㄹ" }, { "l", "ㄹ" },
+                    { "m", "ㅁ" },
+                    { "b", "ㅂ" },
+                    { "s", "ㅅ" },
+                    { "j", "ㅈ" },
+                    { "c", "ㅊ" }, 
+                    { "k", "ㅋ" },
+                    { "t", "ㅌ" },
+                    { "p", "ㅍ" },
+                    { "h", "ㅎ" },
+                
+                    { "w", "ㅱ" },
+                    { "f", "ㅸ" },
+                    { "v", "ㅹ" },
+                    { "z", "ㅿ" },
+                    { "y", "ㆀ" },
+                    { "q", "ㆆ" },
+                }),
+            };
+        }
+
+        string GetSyllable(Match m) {int i_initial;
             switch (m.Groups[1].Value) {
-                default: return s;
+                default: return null;
                 case "g": i_initial = 0; break;
                 case "kk": i_initial = 1; break;
                 case "n": i_initial = 2; break;
@@ -49,7 +121,7 @@ namespace LoveStringH {
 
             int i_median;
             switch (m.Groups[2].Value) {
-                default: return s;
+                default: return null;
                 case "a": i_median = 0; break;
                 case "ae": i_median = 1; break;
                 case "ya": i_median = 2; break;
@@ -61,10 +133,10 @@ namespace LoveStringH {
                 case "o": i_median = 8; break;
                 case "wa": i_median = 9; break;
                 case "wae": i_median = 10; break;
-                case "oe": i_median = 11; break;
+                case "oe": case "oi": i_median = 11; break;
                 case "yo": i_median = 12; break;
                 case "u": i_median = 13; break;
-                case "weo": i_median = 14; break;
+                case "wo": case "weo": i_median = 14; break;
                 case "we": i_median = 15; break;
                 case "wi": i_median = 16; break;
                 case "yu": i_median = 17; break;
@@ -75,7 +147,7 @@ namespace LoveStringH {
 
             int i_coda;
             switch (m.Groups[3].Value) {
-                default: return s;
+                default: return null;
                 case "": i_coda = 0; break;
                 case "k": case "g": i_coda = 1; break;
                 case "kk": i_coda = 2; break;
@@ -85,12 +157,12 @@ namespace LoveStringH {
                 case "nh": i_coda = 6; break;
                 case "t": case "d": i_coda = 7; break;
                 case "l": case "r": i_coda = 8; break;
-                case "lk": i_coda = 9; break;
+                case "lk": case "lg": i_coda = 9; break;
                 case "lm": i_coda = 10; break;
-                case "lp": i_coda = 11; break;
+                case "lb": i_coda = 11; break;
                 case "ls": i_coda = 12; break;
-                case "lth": i_coda = 13; break;
-                case "lph": i_coda = 14; break;
+                case "lt": i_coda = 13; break;
+                case "lp": i_coda = 14; break;
                 case "lh": i_coda = 15; break;
                 case "m": i_coda = 16; break;
                 case "p": case "b": i_coda = 17; break;
@@ -107,35 +179,6 @@ namespace LoveStringH {
             }
 
             return ((char)(0xAC00 + i_initial * 0x24C + i_median * 0x1C + i_coda)).ToString();
-        }
-
-        public override int GetStopper(string s) {
-            s = s.ToLower();
-            if (s.EndsWith("\'")) return s.Length;
-            if (!Regex.Match(s[0].ToString(), "[aeiouywhgkndtmbpsjcrl]").Success) return 1;
-            if (!Regex.Match(s, "[aeiouyw]").Success) {
-                if (s.Length > 1) if (s[0] != s[1]) if (s != "ch") return 1;
-                if (s.Length > 2) return 1;
-            }
-            Match m = Regex.Match(s, "^([hgkndtmbpsjcrl]{0,2}[yw]{0,1})([aeiou]{1,2})([hgkndtmbpsjcrl]{0,2})(.)");
-            if (m.Success) {
-                if (m.Groups[3].Length < 2 && Regex.Match(m.Groups[4].Value, "[hgkndtmbpsjcrl]").Success) return 0;
-                if (m.Groups[3].Length >= 2 && m.Groups[3].Value[1] == 'c') return m.Groups[0].Length - 2;
-                if (Regex.Match(m.Groups[4].Value, "[aeiouyw]").Success) {
-                    if (m.Groups[3].Value == "ch") return m.Groups[0].Length - 3;
-                    if (m.Groups[3].Length > 0) return m.Groups[0].Length - 2;
-                    switch (string.Concat(m.Groups[2].Value, m.Groups[4].Value)) {
-                        default: return m.Groups[0].Length - 1;
-                        case "ae":
-                        case "eo":
-                        case "eu":
-                        case "oe":
-                        case "ui": return 0;
-                    }
-                }
-                return m.Groups[0].Length - 1;
-            }
-            return 0;
         }
     }
 }
