@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace LoveStringH
 {
-    public partial class Form1 : Form {
+    public partial class LoveStringHForm : Form {
         struct EscapeStyle {
             public delegate string f(uint u);
 
@@ -50,7 +50,7 @@ namespace LoveStringH
             new EncoderItem{ name = "EUC-JP", e = Encoding.GetEncoding(51932) },
         };
 
-        public Form1() {
+        public LoveStringHForm() {
             InitializeComponent();
 
             cb_encoding.DataSource = EncoderItems;
@@ -62,6 +62,8 @@ namespace LoveStringH
 
             cb_transliterator.DataSource = TransliteratorItems;
             cb_transliterator.DisplayMember = "name";
+
+            KeyPreview = true;
         }
 
         private void tb_main_TextChanged(object sender, EventArgs e) {
@@ -175,6 +177,43 @@ namespace LoveStringH
 
         private void nud_fontsize_ValueChanged(object sender, EventArgs e) {
             tb_main.Font = new Font("宋体", (float)nud_fontsize.Value);
+        }
+
+        private void form_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Modifiers == Keys.Alt) {
+                switch (e.KeyCode) {
+                    case Keys.L:
+                        tabControl1.SelectedIndex = 1;
+                        cb_transliterator.SelectedIndex = 0;
+                        tb_roman.Focus();
+                        e.Handled = true;
+                        break;
+                    case Keys.G:
+                        tabControl1.SelectedIndex = 1;
+                        cb_transliterator.SelectedIndex = 1;
+                        tb_roman.Focus();
+                        e.Handled = true;
+                        break;
+                    case Keys.R:
+                        tabControl1.SelectedIndex = 1;
+                        cb_transliterator.SelectedIndex = 2;
+                        tb_roman.Focus();
+                        e.Handled = true;
+                        break;
+                    case Keys.A:
+                        tabControl1.SelectedIndex = 1;
+                        cb_transliterator.SelectedIndex = 3;
+                        tb_roman.Focus();
+                        e.Handled = true;
+                        break;
+                    case Keys.K:
+                        tabControl1.SelectedIndex = 1;
+                        cb_transliterator.SelectedIndex = 4;
+                        tb_roman.Focus();
+                        e.Handled = true;
+                        break;
+                }
+            }
         }
     }
 }

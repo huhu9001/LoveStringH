@@ -83,7 +83,7 @@ namespace LoveStringH {
         protected RegexItem[] tData;
     }
 
-    public partial class Form1 : Form {
+    public partial class LoveStringHForm : Form {
         struct TransliteratorItem {
             public string name { get; set; }
             public Transliterator t;

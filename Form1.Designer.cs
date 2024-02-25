@@ -1,6 +1,6 @@
 ﻿namespace LoveStringH
 {
-    partial class Form1
+    partial class LoveStringHForm
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -208,6 +208,7 @@
             this.MinimumSize = new System.Drawing.Size(600, 450);
             this.Name = "Form1";
             this.Text = "LoveStringH";
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.form_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.nud_fontsize)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
