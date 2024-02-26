@@ -198,15 +198,16 @@
             this.tb_roman.Size = new System.Drawing.Size(546, 131);
             this.tb_roman.TabIndex = 0;
             this.tb_roman.TextChanged += new System.EventHandler(this.tb_roman_TextChanged);
+            this.tb_roman.KeyUp += new System.Windows.Forms.KeyEventHandler(this.input_KeyUp);
             // 
-            // Form1
+            // LoveStringHForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(578, 394);
             this.Controls.Add(this.tabControl1);
             this.MinimumSize = new System.Drawing.Size(600, 450);
-            this.Name = "Form1";
+            this.Name = "LoveStringHForm";
             this.Text = "LoveStringH";
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.form_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.nud_fontsize)).EndInit();
