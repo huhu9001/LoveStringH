@@ -219,6 +219,7 @@ namespace LoveStringH
         private void input_KeyUp(object sender, KeyEventArgs e) {
             if (e.Modifiers == (Keys.Shift | Keys.Control) && e.KeyCode == Keys.C) {
                 Clipboard.SetText(tb_nonroman.Text);
+                tb_roman.SelectAll();
             }
         }
     }
