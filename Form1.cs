@@ -45,6 +45,7 @@ namespace LoveStringH
                 new EscapeStyle{ name = "\\x", f_this = (uint u) => { return String.Format("\\x{0:X}", u); } },
             } },
             new EncoderItem{ name = "GB 18030", e = Encoding.GetEncoding(54936) },
+            new EncoderItem{ name = "GB 2312", e = Encoding.GetEncoding(936) },
             new EncoderItem{ name = "Shift-JIS", e = Encoding.GetEncoding(932) },
             new EncoderItem{ name = "Big5", e = Encoding.GetEncoding(950) },
             new EncoderItem{ name = "EUC-JP", e = Encoding.GetEncoding(51932) },

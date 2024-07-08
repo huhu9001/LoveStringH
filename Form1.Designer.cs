@@ -167,6 +167,7 @@
             // 
             // cb_transliterator
             // 
+            this.cb_transliterator.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cb_transliterator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_transliterator.FormattingEnabled = true;
             this.cb_transliterator.Location = new System.Drawing.Point(17, 305);
