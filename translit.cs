@@ -5,7 +5,9 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace LoveStringH {
-    public abstract class Transliterator {
+    public partial class Transliterator {
+        public Transliterator(RegexItem[] items) { tData = items; }
+
         public string GetTranslit(string s) {
             StringBuilder result = new StringBuilder();
 
@@ -47,7 +49,7 @@ namespace LoveStringH {
             return result.ToString();
         }
 
-        protected class RegexItem {
+        public class RegexItem {
             public readonly Regex re;
             public readonly MatchEvaluator me;
 
@@ -80,20 +82,24 @@ namespace LoveStringH {
                 me = m_replaceD;
             }
         }
-        protected RegexItem[] tData;
+        private readonly RegexItem[] tData;
     }
 
     public partial class LoveStringHForm : Form {
         struct TransliteratorItem {
-            public string name { get; set; }
-            public Transliterator t;
+            public string name { get; }
+            public readonly Transliterator t;
+            public TransliteratorItem(string name, Transliterator.RegexItem[] tData) {
+                this.name = name;
+                t = new Transliterator(tData);
+            }
         }
         TransliteratorItem[] TransliteratorItems = new TransliteratorItem[] {
-            new TransliteratorItem { name = "Latin", t = new TransliteratorLatin() },
-            new TransliteratorItem { name = "Greek", t = new TransliteratorGreek() },
-            new TransliteratorItem { name = "Cyrillic", t = new TransliteratorCyrillic() },
-            new TransliteratorItem { name = "Arabic", t = new TransliteratorArabic() },
-            new TransliteratorItem { name = "Hangul", t = new TransliteratorHangul() },
+            new TransliteratorItem("Latin", Transliterator.Latin.RegexItems()),
+            new TransliteratorItem("Greek", Transliterator.Greek.RegexItems()),
+            new TransliteratorItem("Cyrillic", Transliterator.Cyrillic.RegexItems()),
+            new TransliteratorItem("Arabic", Transliterator.Arabic.RegexItems()),
+            new TransliteratorItem("Hangul", Transliterator.Hangul.RegexItems()),
         };
 
         private void tb_roman_TextChanged(object sender, EventArgs e) {
