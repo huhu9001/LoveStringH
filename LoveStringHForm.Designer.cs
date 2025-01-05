@@ -50,7 +50,7 @@
             // 
             this.tb_main.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_main.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.tb_main.Font = new System.Drawing.Font("SimSun", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.tb_main.Location = new System.Drawing.Point(6, 6);
             this.tb_main.Multiline = true;
             this.tb_main.Name = "tb_main";
@@ -174,6 +174,7 @@
             this.cb_transliterator.Name = "cb_transliterator";
             this.cb_transliterator.Size = new System.Drawing.Size(141, 26);
             this.cb_transliterator.TabIndex = 2;
+            this.cb_transliterator.SelectedIndexChanged += new System.EventHandler(this.tb_roman_TextChanged);
             // 
             // tb_nonroman
             // 
