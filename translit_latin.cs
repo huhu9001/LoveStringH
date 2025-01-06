@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using static LoveStringH.Transliterator;
 
 namespace LoveStringH {

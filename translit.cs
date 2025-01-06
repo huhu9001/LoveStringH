@@ -1,11 +1,18 @@
 ﻿using System;
-using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace LoveStringH {
-    public partial class Transliterator {
+    public class Transliterator {
+        public static readonly Transliterator[] all = new Transliterator[] {
+            new Transliterator("Latin", TrLatin.RegexItems),
+            new Transliterator("Greek", TrGreek.RegexItems),
+            new Transliterator("Cyrillic", TrCyrillic.RegexItems),
+            new Transliterator("Arabic", TrArabic.RegexItems),
+            new Transliterator("Hangul", TrHangul.RegexItems),
+        };
+
         public class RegexItem {
             public readonly Regex re;
             public readonly MatchEvaluator me;
@@ -42,7 +49,7 @@ namespace LoveStringH {
 
         public string name { get; }
 		
-        public Transliterator(string name, RegexItem[] items) {
+        Transliterator(string name, RegexItem[] items) {
             this.name = name;
             tData = items;
         }

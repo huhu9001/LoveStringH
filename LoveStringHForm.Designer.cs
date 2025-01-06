@@ -28,29 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tb_main = new System.Windows.Forms.TextBox();
             this.tb_byte = new System.Windows.Forms.TextBox();
             this.cb_escapeStyle = new System.Windows.Forms.ComboBox();
             this.cb_encoding = new System.Windows.Forms.ComboBox();
             this.ch_keepText = new System.Windows.Forms.CheckBox();
-            this.nud_fontsize = new System.Windows.Forms.NumericUpDown();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.nud_fontsizeDecode = new System.Windows.Forms.NumericUpDown();
+            this.tabcontrol_main = new System.Windows.Forms.TabControl();
+            this.tabpage_codepoint = new System.Windows.Forms.TabPage();
+            this.cb_fontDecode = new System.Windows.Forms.ComboBox();
+            this.tabpage_translit = new System.Windows.Forms.TabPage();
+            this.nud_fontsizeTranslit = new System.Windows.Forms.NumericUpDown();
+            this.cb_fontTranslit = new System.Windows.Forms.ComboBox();
             this.cb_transliterator = new System.Windows.Forms.ComboBox();
             this.tb_nonroman = new System.Windows.Forms.TextBox();
             this.tb_roman = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsize)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.encoderBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeDecode)).BeginInit();
+            this.tabcontrol_main.SuspendLayout();
+            this.tabpage_codepoint.SuspendLayout();
+            this.tabpage_translit.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeTranslit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.encoderBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tb_main
             // 
             this.tb_main.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_main.Font = new System.Drawing.Font("SimSun", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.tb_main.Location = new System.Drawing.Point(6, 6);
             this.tb_main.Multiline = true;
             this.tb_main.Name = "tb_main";
@@ -64,11 +70,11 @@
             this.tb_byte.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_byte.Location = new System.Drawing.Point(7, 185);
+            this.tb_byte.Location = new System.Drawing.Point(7, 221);
             this.tb_byte.Multiline = true;
             this.tb_byte.Name = "tb_byte";
             this.tb_byte.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tb_byte.Size = new System.Drawing.Size(559, 175);
+            this.tb_byte.Size = new System.Drawing.Size(559, 139);
             this.tb_byte.TabIndex = 9;
             this.tb_byte.TextChanged += new System.EventHandler(this.tb_byte_TextChanged);
             // 
@@ -80,7 +86,6 @@
             this.cb_escapeStyle.Name = "cb_escapeStyle";
             this.cb_escapeStyle.Size = new System.Drawing.Size(70, 26);
             this.cb_escapeStyle.TabIndex = 16;
-            this.cb_escapeStyle.SelectedIndexChanged += new System.EventHandler(this.cb_escapeStyle_SelectedIndexChanged);
             // 
             // cb_encoding
             // 
@@ -90,7 +95,6 @@
             this.cb_encoding.Name = "cb_encoding";
             this.cb_encoding.Size = new System.Drawing.Size(129, 26);
             this.cb_encoding.TabIndex = 17;
-            this.cb_encoding.SelectedIndexChanged += new System.EventHandler(this.cb_encoding_SelectedIndexChanged);
             // 
             // ch_keepText
             // 
@@ -104,66 +108,111 @@
             this.ch_keepText.Text = "Keep Text Unchanged";
             this.ch_keepText.UseVisualStyleBackColor = true;
             // 
-            // nud_fontsize
+            // nud_fontsizeDecode
             // 
-            this.nud_fontsize.DecimalPlaces = 1;
-            this.nud_fontsize.Location = new System.Drawing.Point(429, 154);
-            this.nud_fontsize.Minimum = new decimal(new int[] {
+            this.nud_fontsizeDecode.DecimalPlaces = 1;
+            this.nud_fontsizeDecode.Location = new System.Drawing.Point(415, 185);
+            this.nud_fontsizeDecode.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.nud_fontsize.Name = "nud_fontsize";
-            this.nud_fontsize.Size = new System.Drawing.Size(69, 28);
-            this.nud_fontsize.TabIndex = 19;
-            this.nud_fontsize.Value = new decimal(new int[] {
+            this.nud_fontsizeDecode.Name = "nud_fontsizeDecode";
+            this.nud_fontsizeDecode.Size = new System.Drawing.Size(69, 28);
+            this.nud_fontsizeDecode.TabIndex = 19;
+            this.nud_fontsizeDecode.Value = new decimal(new int[] {
             12,
             0,
             0,
             0});
-            this.nud_fontsize.ValueChanged += new System.EventHandler(this.nud_fontsize_ValueChanged);
+            this.nud_fontsizeDecode.ValueChanged += new System.EventHandler(this.encodingFontChanged);
             // 
-            // tabControl1
+            // tabcontrol_main
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabcontrol_main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(-2, -1);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(580, 395);
-            this.tabControl1.TabIndex = 20;
+            this.tabcontrol_main.Controls.Add(this.tabpage_codepoint);
+            this.tabcontrol_main.Controls.Add(this.tabpage_translit);
+            this.tabcontrol_main.Location = new System.Drawing.Point(-2, -1);
+            this.tabcontrol_main.Name = "tabcontrol_main";
+            this.tabcontrol_main.SelectedIndex = 0;
+            this.tabcontrol_main.Size = new System.Drawing.Size(580, 395);
+            this.tabcontrol_main.TabIndex = 20;
             // 
-            // tabPage1
+            // tabpage_codepoint
             // 
-            this.tabPage1.Controls.Add(this.tb_main);
-            this.tabPage1.Controls.Add(this.nud_fontsize);
-            this.tabPage1.Controls.Add(this.tb_byte);
-            this.tabPage1.Controls.Add(this.ch_keepText);
-            this.tabPage1.Controls.Add(this.cb_encoding);
-            this.tabPage1.Controls.Add(this.cb_escapeStyle);
-            this.tabPage1.Location = new System.Drawing.Point(4, 28);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(572, 363);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Codepoint";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabpage_codepoint.Controls.Add(this.cb_fontDecode);
+            this.tabpage_codepoint.Controls.Add(this.tb_main);
+            this.tabpage_codepoint.Controls.Add(this.nud_fontsizeDecode);
+            this.tabpage_codepoint.Controls.Add(this.tb_byte);
+            this.tabpage_codepoint.Controls.Add(this.ch_keepText);
+            this.tabpage_codepoint.Controls.Add(this.cb_encoding);
+            this.tabpage_codepoint.Controls.Add(this.cb_escapeStyle);
+            this.tabpage_codepoint.Location = new System.Drawing.Point(4, 28);
+            this.tabpage_codepoint.Name = "tabpage_codepoint";
+            this.tabpage_codepoint.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpage_codepoint.Size = new System.Drawing.Size(572, 363);
+            this.tabpage_codepoint.TabIndex = 0;
+            this.tabpage_codepoint.Text = "Codepoint";
+            this.tabpage_codepoint.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // cb_fontDecode
             // 
-            this.tabPage2.Controls.Add(this.cb_transliterator);
-            this.tabPage2.Controls.Add(this.tb_nonroman);
-            this.tabPage2.Controls.Add(this.tb_roman);
-            this.tabPage2.Location = new System.Drawing.Point(4, 28);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(572, 363);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Translit";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.cb_fontDecode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cb_fontDecode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_fontDecode.FormattingEnabled = true;
+            this.cb_fontDecode.Location = new System.Drawing.Point(7, 184);
+            this.cb_fontDecode.Name = "cb_fontDecode";
+            this.cb_fontDecode.Size = new System.Drawing.Size(402, 26);
+            this.cb_fontDecode.TabIndex = 20;
+            // 
+            // tabpage_translit
+            // 
+            this.tabpage_translit.Controls.Add(this.nud_fontsizeTranslit);
+            this.tabpage_translit.Controls.Add(this.cb_fontTranslit);
+            this.tabpage_translit.Controls.Add(this.cb_transliterator);
+            this.tabpage_translit.Controls.Add(this.tb_nonroman);
+            this.tabpage_translit.Controls.Add(this.tb_roman);
+            this.tabpage_translit.Location = new System.Drawing.Point(4, 28);
+            this.tabpage_translit.Name = "tabpage_translit";
+            this.tabpage_translit.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpage_translit.Size = new System.Drawing.Size(572, 363);
+            this.tabpage_translit.TabIndex = 1;
+            this.tabpage_translit.Text = "Translit";
+            this.tabpage_translit.UseVisualStyleBackColor = true;
+            // 
+            // nud_fontsizeTranslit
+            // 
+            this.nud_fontsizeTranslit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.nud_fontsizeTranslit.DecimalPlaces = 1;
+            this.nud_fontsizeTranslit.Location = new System.Drawing.Point(440, 305);
+            this.nud_fontsizeTranslit.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_fontsizeTranslit.Name = "nud_fontsizeTranslit";
+            this.nud_fontsizeTranslit.Size = new System.Drawing.Size(80, 28);
+            this.nud_fontsizeTranslit.TabIndex = 4;
+            this.nud_fontsizeTranslit.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.nud_fontsizeTranslit.ValueChanged += new System.EventHandler(this.translitFontChanged);
+            // 
+            // cb_fontTranslit
+            // 
+            this.cb_fontTranslit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cb_fontTranslit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_fontTranslit.FormattingEnabled = true;
+            this.cb_fontTranslit.Location = new System.Drawing.Point(164, 305);
+            this.cb_fontTranslit.Name = "cb_fontTranslit";
+            this.cb_fontTranslit.Size = new System.Drawing.Size(270, 26);
+            this.cb_fontTranslit.TabIndex = 3;
+            this.cb_fontTranslit.SelectedIndexChanged += new System.EventHandler(this.translitFontChanged);
             // 
             // cb_transliterator
             // 
@@ -174,13 +223,11 @@
             this.cb_transliterator.Name = "cb_transliterator";
             this.cb_transliterator.Size = new System.Drawing.Size(141, 26);
             this.cb_transliterator.TabIndex = 2;
-            this.cb_transliterator.SelectedIndexChanged += new System.EventHandler(this.tb_roman_TextChanged);
             // 
             // tb_nonroman
             // 
             this.tb_nonroman.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_nonroman.Font = new System.Drawing.Font("Arial Narrow", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_nonroman.Location = new System.Drawing.Point(14, 156);
             this.tb_nonroman.Multiline = true;
             this.tb_nonroman.Name = "tb_nonroman";
@@ -202,22 +249,28 @@
             this.tb_roman.TextChanged += new System.EventHandler(this.tb_roman_TextChanged);
             this.tb_roman.KeyUp += new System.Windows.Forms.KeyEventHandler(this.input_KeyUp);
             // 
+            // encoderBindingSource
+            // 
+            this.encoderBindingSource.DataSource = typeof(LoveStringH.Encoder);
+            // 
             // LoveStringHForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(578, 394);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabcontrol_main);
             this.MinimumSize = new System.Drawing.Size(600, 450);
             this.Name = "LoveStringHForm";
             this.Text = "LoveStringH";
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.form_KeyUp);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsize)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeDecode)).EndInit();
+            this.tabcontrol_main.ResumeLayout(false);
+            this.tabpage_codepoint.ResumeLayout(false);
+            this.tabpage_codepoint.PerformLayout();
+            this.tabpage_translit.ResumeLayout(false);
+            this.tabpage_translit.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeTranslit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.encoderBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -229,13 +282,17 @@
         private System.Windows.Forms.ComboBox cb_escapeStyle;
         private System.Windows.Forms.ComboBox cb_encoding;
         private System.Windows.Forms.CheckBox ch_keepText;
-        private System.Windows.Forms.NumericUpDown nud_fontsize;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.NumericUpDown nud_fontsizeDecode;
+        private System.Windows.Forms.TabControl tabcontrol_main;
+        private System.Windows.Forms.TabPage tabpage_codepoint;
+        private System.Windows.Forms.TabPage tabpage_translit;
         private System.Windows.Forms.TextBox tb_roman;
         private System.Windows.Forms.TextBox tb_nonroman;
         private System.Windows.Forms.ComboBox cb_transliterator;
+        private System.Windows.Forms.ComboBox cb_fontDecode;
+        private System.Windows.Forms.BindingSource encoderBindingSource;
+        private System.Windows.Forms.ComboBox cb_fontTranslit;
+        private System.Windows.Forms.NumericUpDown nud_fontsizeTranslit;
     }
 }
 
