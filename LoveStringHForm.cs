@@ -9,23 +9,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using System.Text.RegularExpressions;
-
 namespace LoveStringH {
-    public partial class LoveStringHForm : Form {
-        static readonly InstalledFontCollection fonts = new InstalledFontCollection();
+    public partial class LoveStringHForm:Form {
+        static private readonly InstalledFontCollection fonts = new InstalledFontCollection();
 
-        bool stopTextChangedOnce;
-        bool stopEscapeStyleChangedOnce;
+        private bool stopTextChangedOnce;
+        private bool stopEscapeStyleChangedOnce;
+
+        private readonly FormRegex formRegex;
 
         public LoveStringHForm() {
             InitializeComponent();
+            //System.Windows.Controls.Primitives.TextBoxBase.IsInactiveSelectionHighlightEnabled = true;
+            //tb_regexTarget.IsInactiveSelectionHighlightEnabled;
 
-            cb_encoding.DisplayMember = "name";
-            cb_escapeStyle.DisplayMember = "name";
-            cb_transliterator.DisplayMember = "name";
-            cb_fontDecode.DisplayMember = "Name";
-            cb_fontTranslit.DisplayMember = "Name";
+            formRegex = new FormRegex();
+            AddOwnedForm(formRegex);
 
             cb_encoding.DataSource = Encoder.all;
             cb_transliterator.DataSource = Transliterator.all;
@@ -93,6 +92,20 @@ namespace LoveStringH {
 
         private void tb_roman_TextChanged(object sender, EventArgs e) {
             tb_nonroman.Text = ((Transliterator)cb_transliterator.SelectedItem).GetTranslit(tb_roman.Text);
+        }
+
+        private void tabcontrol_main_Selected(object sender, TabControlEventArgs e) {
+            if (e.TabPage == tabpage_regex) {
+                formRegex.Show();
+                if (WindowState == FormWindowState.Normal) {
+                    Point p = DesktopLocation;
+                    p.Y += Size.Height;
+                    formRegex.DesktopLocation = p;
+                }
+            }
+        }
+        private void tabcontrol_main_Deselected(object sender, TabControlEventArgs e) {
+            if (e.TabPage == tabpage_regex) formRegex.Hide();
         }
 
         private void form_KeyUp(object sender, KeyEventArgs e) {

@@ -4,6 +4,12 @@ using static LoveStringH.Transliterator;
 namespace LoveStringH {
     public class TrArabic {
         public static readonly RegexItem[] RegexItems = new RegexItem[] {
+            new RegexItem("(?<![A-Za-z])([aiu])(?=[A-Za-z])", new Dictionary<string, string> {
+                { "a", "\u0627" },
+                { "i", "\u0625" },
+                { "u", "\u0624" },
+            }),
+            new RegexItem("(?<=[A-Za-z])-(?=[A-Za-z])", ""),
             new RegexItem("..", new Dictionary<string, string> {
                 { "aa", "\u0627" },
                 { "th", "\u062B" },
@@ -14,11 +20,9 @@ namespace LoveStringH {
                 { "do", "\u0636" },
                 { "to", "\u0637" },
                 { "zo", "\u0638" },
-                { "gh", "\u063A" },
                 { "uu", "\u0648" },
                 { "ii", "\u064A" },
 
-                { "'", "\u0621" },
                 { "a~", "\u0622" },
                 { "'a", "\u0623" },
                 { "'u", "\u0624" },
@@ -38,6 +42,7 @@ namespace LoveStringH {
                 { "z", "\u0632" },
                 { "s", "\u0633" },
                 { "o", "\u0639" },
+                { "g", "\u063A" },
                 { "f", "\u0641" },
                 { "q", "\u0642" },
                 { "k", "\u0643" },
@@ -53,6 +58,7 @@ namespace LoveStringH {
                 { "i", "" },
                 { "u", "" },
                 
+                { "'", "\u0621" },
                 { "-", "\u0640" },
             }),
         };

@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.tb_main = new System.Windows.Forms.TextBox();
             this.tb_byte = new System.Windows.Forms.TextBox();
             this.cb_escapeStyle = new System.Windows.Forms.ComboBox();
@@ -44,13 +43,14 @@
             this.cb_transliterator = new System.Windows.Forms.ComboBox();
             this.tb_nonroman = new System.Windows.Forms.TextBox();
             this.tb_roman = new System.Windows.Forms.TextBox();
-            this.encoderBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.tabpage_regex = new System.Windows.Forms.TabPage();
+            this.tb_regexTarget = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeDecode)).BeginInit();
             this.tabcontrol_main.SuspendLayout();
             this.tabpage_codepoint.SuspendLayout();
             this.tabpage_translit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeTranslit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.encoderBindingSource)).BeginInit();
+            this.tabpage_regex.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_main
@@ -80,6 +80,7 @@
             // 
             // cb_escapeStyle
             // 
+            this.cb_escapeStyle.DisplayMember = "name";
             this.cb_escapeStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_escapeStyle.FormattingEnabled = true;
             this.cb_escapeStyle.Location = new System.Drawing.Point(142, 153);
@@ -89,6 +90,7 @@
             // 
             // cb_encoding
             // 
+            this.cb_encoding.DisplayMember = "name";
             this.cb_encoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_encoding.FormattingEnabled = true;
             this.cb_encoding.Location = new System.Drawing.Point(7, 153);
@@ -134,11 +136,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabcontrol_main.Controls.Add(this.tabpage_codepoint);
             this.tabcontrol_main.Controls.Add(this.tabpage_translit);
+            this.tabcontrol_main.Controls.Add(this.tabpage_regex);
             this.tabcontrol_main.Location = new System.Drawing.Point(-2, -1);
             this.tabcontrol_main.Name = "tabcontrol_main";
             this.tabcontrol_main.SelectedIndex = 0;
             this.tabcontrol_main.Size = new System.Drawing.Size(580, 395);
             this.tabcontrol_main.TabIndex = 20;
+            this.tabcontrol_main.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabcontrol_main_Selected);
+            this.tabcontrol_main.Deselected += new System.Windows.Forms.TabControlEventHandler(this.tabcontrol_main_Deselected);
             // 
             // tabpage_codepoint
             // 
@@ -161,6 +166,7 @@
             // 
             this.cb_fontDecode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.cb_fontDecode.DisplayMember = "Name";
             this.cb_fontDecode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_fontDecode.FormattingEnabled = true;
             this.cb_fontDecode.Location = new System.Drawing.Point(7, 184);
@@ -206,17 +212,18 @@
             // cb_fontTranslit
             // 
             this.cb_fontTranslit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cb_fontTranslit.DisplayMember = "Name";
             this.cb_fontTranslit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_fontTranslit.FormattingEnabled = true;
             this.cb_fontTranslit.Location = new System.Drawing.Point(164, 305);
             this.cb_fontTranslit.Name = "cb_fontTranslit";
             this.cb_fontTranslit.Size = new System.Drawing.Size(270, 26);
             this.cb_fontTranslit.TabIndex = 3;
-            this.cb_fontTranslit.SelectedIndexChanged += new System.EventHandler(this.translitFontChanged);
             // 
             // cb_transliterator
             // 
             this.cb_transliterator.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cb_transliterator.DisplayMember = "name";
             this.cb_transliterator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_transliterator.FormattingEnabled = true;
             this.cb_transliterator.Location = new System.Drawing.Point(17, 305);
@@ -249,9 +256,26 @@
             this.tb_roman.TextChanged += new System.EventHandler(this.tb_roman_TextChanged);
             this.tb_roman.KeyUp += new System.Windows.Forms.KeyEventHandler(this.input_KeyUp);
             // 
-            // encoderBindingSource
+            // tabpage_regex
             // 
-            this.encoderBindingSource.DataSource = typeof(LoveStringH.Encoder);
+            this.tabpage_regex.Controls.Add(this.tb_regexTarget);
+            this.tabpage_regex.Location = new System.Drawing.Point(4, 28);
+            this.tabpage_regex.Name = "tabpage_regex";
+            this.tabpage_regex.Size = new System.Drawing.Size(572, 363);
+            this.tabpage_regex.TabIndex = 2;
+            this.tabpage_regex.Text = "Regex";
+            this.tabpage_regex.UseVisualStyleBackColor = true;
+            // 
+            // tb_regexTarget
+            // 
+            this.tb_regexTarget.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_regexTarget.Location = new System.Drawing.Point(10, 14);
+            this.tb_regexTarget.Multiline = true;
+            this.tb_regexTarget.Name = "tb_regexTarget";
+            this.tb_regexTarget.Size = new System.Drawing.Size(554, 341);
+            this.tb_regexTarget.TabIndex = 4;
             // 
             // LoveStringHForm
             // 
@@ -270,7 +294,8 @@
             this.tabpage_translit.ResumeLayout(false);
             this.tabpage_translit.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeTranslit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.encoderBindingSource)).EndInit();
+            this.tabpage_regex.ResumeLayout(false);
+            this.tabpage_regex.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -290,9 +315,10 @@
         private System.Windows.Forms.TextBox tb_nonroman;
         private System.Windows.Forms.ComboBox cb_transliterator;
         private System.Windows.Forms.ComboBox cb_fontDecode;
-        private System.Windows.Forms.BindingSource encoderBindingSource;
         private System.Windows.Forms.ComboBox cb_fontTranslit;
         private System.Windows.Forms.NumericUpDown nud_fontsizeTranslit;
+        private System.Windows.Forms.TabPage tabpage_regex;
+        internal System.Windows.Forms.TextBox tb_regexTarget;
     }
 }
 

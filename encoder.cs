@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using static LoveStringH.Encoder.EscapeStyle;
 
 namespace LoveStringH {
     public class Encoder {
@@ -13,18 +14,14 @@ namespace LoveStringH {
             }
         }
         static readonly EscapeStyle[] estylesDefault = new EscapeStyle[] {
-            new EscapeStyle("\\x", u => String.Format("\\x{0:X}", u)),
-            new EscapeStyle("%", u => String.Format("%{0:X2}", u)),
+            new EscapeStyle("\\x", u => $"\\x{u:X}"),
+            new EscapeStyle("%", u => $"%{u:X2}"),
         };
 
         public static readonly Encoder[] all = new Encoder[] {
             new Encoder("Unicode", null, new EscapeStyle[] {
-                new EscapeStyle("\\u", u => {
-                    if (u < 0x80) return String.Format("\\x{0:X}", u);
-                    if (u < 0x10000) return String.Format("\\u{0:X4}", u);
-                    return String.Format("\\U{0:X8}", u);
-                }),
-                new EscapeStyle("&#x", u => String.Format("&#x{0:X};", u)),
+                new EscapeStyle("\\u", u => u < 0x80 ? $"\\x{u:X}" : u < 0x10000 ? $"\\u{u:X4}" : $"\\U{u:X8}"),
+                new EscapeStyle("&#x", u => $"&#x{u:X};"),
             }),
             new Encoder("UTF-8", Encoding.UTF8, estylesDefault ),
             new Encoder("UTF-16", null, new EscapeStyle[] { estylesDefault[0] } ),
@@ -48,7 +45,6 @@ namespace LoveStringH {
 
         public string encode(string str, Func<uint, string> escape) {
             StringBuilder s_result = new StringBuilder();
-            //Func<uint, string> escape = ((EscapeStyle)cb_escapeStyle.SelectedItem).escape;
             if (e == null) {
                 char surrogate = '\0';
                 foreach (char chr in str) {

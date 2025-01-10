@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -64,8 +63,8 @@ namespace LoveStringH {
             while (i0 < s.Length) {
                 string ss = null;
                 foreach (RegexItem td in tData) {
-                    m = td.re.Match(s, i0);
-                    if (m.Success && m.Index == i0) {
+                    if (td.re.IsMatch(s, i0)) {
+                        m = td.re.Match(s, i0);
                         if (m.Length == 0) {
                             if (!emptyMatch) {
                                 ss = td.me(m);
