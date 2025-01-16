@@ -26,278 +26,269 @@
         /// 设计器支持所需的方法 - 不要修改
         /// 使用代码编辑器修改此方法的内容。
         /// </summary>
-        private void InitializeComponent()
-        {
-            this.tb_main = new System.Windows.Forms.TextBox();
-            this.tb_byte = new System.Windows.Forms.TextBox();
-            this.cb_escapeStyle = new System.Windows.Forms.ComboBox();
-            this.cb_encoding = new System.Windows.Forms.ComboBox();
-            this.ch_keepText = new System.Windows.Forms.CheckBox();
-            this.nud_fontsizeDecode = new System.Windows.Forms.NumericUpDown();
-            this.tabcontrol_main = new System.Windows.Forms.TabControl();
-            this.tabpage_codepoint = new System.Windows.Forms.TabPage();
-            this.cb_fontDecode = new System.Windows.Forms.ComboBox();
-            this.tabpage_translit = new System.Windows.Forms.TabPage();
-            this.nud_fontsizeTranslit = new System.Windows.Forms.NumericUpDown();
-            this.cb_fontTranslit = new System.Windows.Forms.ComboBox();
-            this.cb_transliterator = new System.Windows.Forms.ComboBox();
-            this.tb_nonroman = new System.Windows.Forms.TextBox();
-            this.tb_roman = new System.Windows.Forms.TextBox();
-            this.tabpage_regex = new System.Windows.Forms.TabPage();
-            this.tb_regexTarget = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeDecode)).BeginInit();
-            this.tabcontrol_main.SuspendLayout();
-            this.tabpage_codepoint.SuspendLayout();
-            this.tabpage_translit.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeTranslit)).BeginInit();
-            this.tabpage_regex.SuspendLayout();
-            this.SuspendLayout();
+        private void InitializeComponent() {
+            tb_main = new TextBox();
+            tb_byte = new TextBox();
+            cb_escapeStyle = new ComboBox();
+            cb_encoding = new ComboBox();
+            ch_keepText = new CheckBox();
+            nud_fontsizeDecode = new NumericUpDown();
+            tabcontrol_main = new TabControl();
+            tabpage_codepoint = new TabPage();
+            cb_fontDecode = new ComboBox();
+            tabpage_translit = new TabPage();
+            nud_fontsizeTranslit = new NumericUpDown();
+            cb_fontTranslit = new ComboBox();
+            cb_transliterator = new ComboBox();
+            tb_nonroman = new TextBox();
+            tb_roman = new TextBox();
+            tabpage_regex = new TabPage();
+            tb_regexTarget = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)nud_fontsizeDecode).BeginInit();
+            tabcontrol_main.SuspendLayout();
+            tabpage_codepoint.SuspendLayout();
+            tabpage_translit.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)nud_fontsizeTranslit).BeginInit();
+            tabpage_regex.SuspendLayout();
+            SuspendLayout();
             // 
             // tb_main
             // 
-            this.tb_main.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_main.Location = new System.Drawing.Point(6, 6);
-            this.tb_main.Multiline = true;
-            this.tb_main.Name = "tb_main";
-            this.tb_main.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tb_main.Size = new System.Drawing.Size(558, 145);
-            this.tb_main.TabIndex = 0;
-            this.tb_main.TextChanged += new System.EventHandler(this.tb_main_TextChanged);
+            tb_main.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tb_main.Location = new Point(7, 8);
+            tb_main.Margin = new Padding(4);
+            tb_main.Multiline = true;
+            tb_main.Name = "tb_main";
+            tb_main.ScrollBars = ScrollBars.Vertical;
+            tb_main.Size = new Size(681, 192);
+            tb_main.TabIndex = 0;
+            tb_main.TextChanged += tb_main_TextChanged;
             // 
             // tb_byte
             // 
-            this.tb_byte.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_byte.Location = new System.Drawing.Point(7, 221);
-            this.tb_byte.Multiline = true;
-            this.tb_byte.Name = "tb_byte";
-            this.tb_byte.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tb_byte.Size = new System.Drawing.Size(559, 139);
-            this.tb_byte.TabIndex = 9;
-            this.tb_byte.TextChanged += new System.EventHandler(this.tb_byte_TextChanged);
+            tb_byte.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tb_byte.Location = new Point(9, 295);
+            tb_byte.Margin = new Padding(4);
+            tb_byte.Multiline = true;
+            tb_byte.Name = "tb_byte";
+            tb_byte.ScrollBars = ScrollBars.Vertical;
+            tb_byte.Size = new Size(682, 184);
+            tb_byte.TabIndex = 9;
+            tb_byte.TextChanged += tb_byte_TextChanged;
             // 
             // cb_escapeStyle
             // 
-            this.cb_escapeStyle.DisplayMember = "name";
-            this.cb_escapeStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_escapeStyle.FormattingEnabled = true;
-            this.cb_escapeStyle.Location = new System.Drawing.Point(142, 153);
-            this.cb_escapeStyle.Name = "cb_escapeStyle";
-            this.cb_escapeStyle.Size = new System.Drawing.Size(70, 26);
-            this.cb_escapeStyle.TabIndex = 16;
+            cb_escapeStyle.DisplayMember = "name";
+            cb_escapeStyle.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb_escapeStyle.FormattingEnabled = true;
+            cb_escapeStyle.Location = new Point(174, 204);
+            cb_escapeStyle.Margin = new Padding(4);
+            cb_escapeStyle.Name = "cb_escapeStyle";
+            cb_escapeStyle.Size = new Size(85, 32);
+            cb_escapeStyle.TabIndex = 16;
             // 
             // cb_encoding
             // 
-            this.cb_encoding.DisplayMember = "name";
-            this.cb_encoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_encoding.FormattingEnabled = true;
-            this.cb_encoding.Location = new System.Drawing.Point(7, 153);
-            this.cb_encoding.Name = "cb_encoding";
-            this.cb_encoding.Size = new System.Drawing.Size(129, 26);
-            this.cb_encoding.TabIndex = 17;
+            cb_encoding.DisplayMember = "name";
+            cb_encoding.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb_encoding.FormattingEnabled = true;
+            cb_encoding.Location = new Point(9, 204);
+            cb_encoding.Margin = new Padding(4);
+            cb_encoding.Name = "cb_encoding";
+            cb_encoding.Size = new Size(157, 32);
+            cb_encoding.TabIndex = 17;
             // 
             // ch_keepText
             // 
-            this.ch_keepText.AutoSize = true;
-            this.ch_keepText.Checked = true;
-            this.ch_keepText.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ch_keepText.Location = new System.Drawing.Point(218, 157);
-            this.ch_keepText.Name = "ch_keepText";
-            this.ch_keepText.Size = new System.Drawing.Size(205, 22);
-            this.ch_keepText.TabIndex = 18;
-            this.ch_keepText.Text = "Keep Text Unchanged";
-            this.ch_keepText.UseVisualStyleBackColor = true;
+            ch_keepText.AutoSize = true;
+            ch_keepText.Checked = true;
+            ch_keepText.CheckState = CheckState.Checked;
+            ch_keepText.Location = new Point(266, 209);
+            ch_keepText.Margin = new Padding(4);
+            ch_keepText.Name = "ch_keepText";
+            ch_keepText.Size = new Size(224, 28);
+            ch_keepText.TabIndex = 18;
+            ch_keepText.Text = "Keep Text Unchanged";
+            ch_keepText.UseVisualStyleBackColor = true;
             // 
             // nud_fontsizeDecode
             // 
-            this.nud_fontsizeDecode.DecimalPlaces = 1;
-            this.nud_fontsizeDecode.Location = new System.Drawing.Point(415, 185);
-            this.nud_fontsizeDecode.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_fontsizeDecode.Name = "nud_fontsizeDecode";
-            this.nud_fontsizeDecode.Size = new System.Drawing.Size(69, 28);
-            this.nud_fontsizeDecode.TabIndex = 19;
-            this.nud_fontsizeDecode.Value = new decimal(new int[] {
-            12,
-            0,
-            0,
-            0});
-            this.nud_fontsizeDecode.ValueChanged += new System.EventHandler(this.encodingFontChanged);
+            nud_fontsizeDecode.DecimalPlaces = 1;
+            nud_fontsizeDecode.Location = new Point(507, 247);
+            nud_fontsizeDecode.Margin = new Padding(4);
+            nud_fontsizeDecode.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            nud_fontsizeDecode.Name = "nud_fontsizeDecode";
+            nud_fontsizeDecode.Size = new Size(84, 30);
+            nud_fontsizeDecode.TabIndex = 19;
+            nud_fontsizeDecode.Value = new decimal(new int[] { 12, 0, 0, 0 });
+            nud_fontsizeDecode.ValueChanged += encodingFontChanged;
             // 
             // tabcontrol_main
             // 
-            this.tabcontrol_main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabcontrol_main.Controls.Add(this.tabpage_codepoint);
-            this.tabcontrol_main.Controls.Add(this.tabpage_translit);
-            this.tabcontrol_main.Controls.Add(this.tabpage_regex);
-            this.tabcontrol_main.Location = new System.Drawing.Point(-2, -1);
-            this.tabcontrol_main.Name = "tabcontrol_main";
-            this.tabcontrol_main.SelectedIndex = 0;
-            this.tabcontrol_main.Size = new System.Drawing.Size(580, 395);
-            this.tabcontrol_main.TabIndex = 20;
-            this.tabcontrol_main.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabcontrol_main_Selected);
-            this.tabcontrol_main.Deselected += new System.Windows.Forms.TabControlEventHandler(this.tabcontrol_main_Deselected);
+            tabcontrol_main.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabcontrol_main.Controls.Add(tabpage_codepoint);
+            tabcontrol_main.Controls.Add(tabpage_translit);
+            tabcontrol_main.Controls.Add(tabpage_regex);
+            tabcontrol_main.Location = new Point(-2, -1);
+            tabcontrol_main.Margin = new Padding(4);
+            tabcontrol_main.Name = "tabcontrol_main";
+            tabcontrol_main.SelectedIndex = 0;
+            tabcontrol_main.Size = new Size(709, 527);
+            tabcontrol_main.TabIndex = 20;
+            tabcontrol_main.Selected += tabcontrol_main_Selected;
+            tabcontrol_main.Deselected += tabcontrol_main_Deselected;
             // 
             // tabpage_codepoint
             // 
-            this.tabpage_codepoint.Controls.Add(this.cb_fontDecode);
-            this.tabpage_codepoint.Controls.Add(this.tb_main);
-            this.tabpage_codepoint.Controls.Add(this.nud_fontsizeDecode);
-            this.tabpage_codepoint.Controls.Add(this.tb_byte);
-            this.tabpage_codepoint.Controls.Add(this.ch_keepText);
-            this.tabpage_codepoint.Controls.Add(this.cb_encoding);
-            this.tabpage_codepoint.Controls.Add(this.cb_escapeStyle);
-            this.tabpage_codepoint.Location = new System.Drawing.Point(4, 28);
-            this.tabpage_codepoint.Name = "tabpage_codepoint";
-            this.tabpage_codepoint.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpage_codepoint.Size = new System.Drawing.Size(572, 363);
-            this.tabpage_codepoint.TabIndex = 0;
-            this.tabpage_codepoint.Text = "Codepoint";
-            this.tabpage_codepoint.UseVisualStyleBackColor = true;
+            tabpage_codepoint.Controls.Add(cb_fontDecode);
+            tabpage_codepoint.Controls.Add(tb_main);
+            tabpage_codepoint.Controls.Add(nud_fontsizeDecode);
+            tabpage_codepoint.Controls.Add(tb_byte);
+            tabpage_codepoint.Controls.Add(ch_keepText);
+            tabpage_codepoint.Controls.Add(cb_encoding);
+            tabpage_codepoint.Controls.Add(cb_escapeStyle);
+            tabpage_codepoint.Location = new Point(4, 33);
+            tabpage_codepoint.Margin = new Padding(4);
+            tabpage_codepoint.Name = "tabpage_codepoint";
+            tabpage_codepoint.Padding = new Padding(4);
+            tabpage_codepoint.Size = new Size(701, 490);
+            tabpage_codepoint.TabIndex = 0;
+            tabpage_codepoint.Text = "Codepoint";
+            tabpage_codepoint.UseVisualStyleBackColor = true;
             // 
             // cb_fontDecode
             // 
-            this.cb_fontDecode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cb_fontDecode.DisplayMember = "Name";
-            this.cb_fontDecode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_fontDecode.FormattingEnabled = true;
-            this.cb_fontDecode.Location = new System.Drawing.Point(7, 184);
-            this.cb_fontDecode.Name = "cb_fontDecode";
-            this.cb_fontDecode.Size = new System.Drawing.Size(402, 26);
-            this.cb_fontDecode.TabIndex = 20;
+            cb_fontDecode.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cb_fontDecode.DisplayMember = "Name";
+            cb_fontDecode.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb_fontDecode.FormattingEnabled = true;
+            cb_fontDecode.Location = new Point(9, 245);
+            cb_fontDecode.Margin = new Padding(4);
+            cb_fontDecode.Name = "cb_fontDecode";
+            cb_fontDecode.Size = new Size(490, 32);
+            cb_fontDecode.TabIndex = 20;
             // 
             // tabpage_translit
             // 
-            this.tabpage_translit.Controls.Add(this.nud_fontsizeTranslit);
-            this.tabpage_translit.Controls.Add(this.cb_fontTranslit);
-            this.tabpage_translit.Controls.Add(this.cb_transliterator);
-            this.tabpage_translit.Controls.Add(this.tb_nonroman);
-            this.tabpage_translit.Controls.Add(this.tb_roman);
-            this.tabpage_translit.Location = new System.Drawing.Point(4, 28);
-            this.tabpage_translit.Name = "tabpage_translit";
-            this.tabpage_translit.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpage_translit.Size = new System.Drawing.Size(572, 363);
-            this.tabpage_translit.TabIndex = 1;
-            this.tabpage_translit.Text = "Translit";
-            this.tabpage_translit.UseVisualStyleBackColor = true;
+            tabpage_translit.Controls.Add(nud_fontsizeTranslit);
+            tabpage_translit.Controls.Add(cb_fontTranslit);
+            tabpage_translit.Controls.Add(cb_transliterator);
+            tabpage_translit.Controls.Add(tb_nonroman);
+            tabpage_translit.Controls.Add(tb_roman);
+            tabpage_translit.Location = new Point(4, 33);
+            tabpage_translit.Margin = new Padding(4);
+            tabpage_translit.Name = "tabpage_translit";
+            tabpage_translit.Padding = new Padding(4);
+            tabpage_translit.Size = new Size(701, 490);
+            tabpage_translit.TabIndex = 1;
+            tabpage_translit.Text = "Translit";
+            tabpage_translit.UseVisualStyleBackColor = true;
             // 
             // nud_fontsizeTranslit
             // 
-            this.nud_fontsizeTranslit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.nud_fontsizeTranslit.DecimalPlaces = 1;
-            this.nud_fontsizeTranslit.Location = new System.Drawing.Point(440, 305);
-            this.nud_fontsizeTranslit.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_fontsizeTranslit.Name = "nud_fontsizeTranslit";
-            this.nud_fontsizeTranslit.Size = new System.Drawing.Size(80, 28);
-            this.nud_fontsizeTranslit.TabIndex = 4;
-            this.nud_fontsizeTranslit.Value = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.nud_fontsizeTranslit.ValueChanged += new System.EventHandler(this.translitFontChanged);
+            nud_fontsizeTranslit.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            nud_fontsizeTranslit.DecimalPlaces = 1;
+            nud_fontsizeTranslit.Location = new Point(538, 407);
+            nud_fontsizeTranslit.Margin = new Padding(4);
+            nud_fontsizeTranslit.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            nud_fontsizeTranslit.Name = "nud_fontsizeTranslit";
+            nud_fontsizeTranslit.Size = new Size(98, 30);
+            nud_fontsizeTranslit.TabIndex = 4;
+            nud_fontsizeTranslit.Value = new decimal(new int[] { 16, 0, 0, 0 });
+            nud_fontsizeTranslit.ValueChanged += translitFontChanged;
             // 
             // cb_fontTranslit
             // 
-            this.cb_fontTranslit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.cb_fontTranslit.DisplayMember = "Name";
-            this.cb_fontTranslit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_fontTranslit.FormattingEnabled = true;
-            this.cb_fontTranslit.Location = new System.Drawing.Point(164, 305);
-            this.cb_fontTranslit.Name = "cb_fontTranslit";
-            this.cb_fontTranslit.Size = new System.Drawing.Size(270, 26);
-            this.cb_fontTranslit.TabIndex = 3;
+            cb_fontTranslit.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            cb_fontTranslit.DisplayMember = "Name";
+            cb_fontTranslit.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb_fontTranslit.FormattingEnabled = true;
+            cb_fontTranslit.Location = new Point(200, 407);
+            cb_fontTranslit.Margin = new Padding(4);
+            cb_fontTranslit.Name = "cb_fontTranslit";
+            cb_fontTranslit.Size = new Size(329, 32);
+            cb_fontTranslit.TabIndex = 3;
             // 
             // cb_transliterator
             // 
-            this.cb_transliterator.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.cb_transliterator.DisplayMember = "name";
-            this.cb_transliterator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_transliterator.FormattingEnabled = true;
-            this.cb_transliterator.Location = new System.Drawing.Point(17, 305);
-            this.cb_transliterator.Name = "cb_transliterator";
-            this.cb_transliterator.Size = new System.Drawing.Size(141, 26);
-            this.cb_transliterator.TabIndex = 2;
+            cb_transliterator.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            cb_transliterator.DisplayMember = "name";
+            cb_transliterator.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb_transliterator.FormattingEnabled = true;
+            cb_transliterator.Location = new Point(21, 407);
+            cb_transliterator.Margin = new Padding(4);
+            cb_transliterator.Name = "cb_transliterator";
+            cb_transliterator.Size = new Size(171, 32);
+            cb_transliterator.TabIndex = 2;
             // 
             // tb_nonroman
             // 
-            this.tb_nonroman.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_nonroman.Location = new System.Drawing.Point(14, 156);
-            this.tb_nonroman.Multiline = true;
-            this.tb_nonroman.Name = "tb_nonroman";
-            this.tb_nonroman.ReadOnly = true;
-            this.tb_nonroman.Size = new System.Drawing.Size(544, 138);
-            this.tb_nonroman.TabIndex = 1;
+            tb_nonroman.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tb_nonroman.Location = new Point(17, 208);
+            tb_nonroman.Margin = new Padding(4);
+            tb_nonroman.Multiline = true;
+            tb_nonroman.Name = "tb_nonroman";
+            tb_nonroman.ReadOnly = true;
+            tb_nonroman.Size = new Size(664, 183);
+            tb_nonroman.TabIndex = 1;
             // 
             // tb_roman
             // 
-            this.tb_roman.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_roman.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_roman.Location = new System.Drawing.Point(13, 10);
-            this.tb_roman.Multiline = true;
-            this.tb_roman.Name = "tb_roman";
-            this.tb_roman.Size = new System.Drawing.Size(546, 131);
-            this.tb_roman.TabIndex = 0;
-            this.tb_roman.TextChanged += new System.EventHandler(this.tb_roman_TextChanged);
-            this.tb_roman.KeyUp += new System.Windows.Forms.KeyEventHandler(this.input_KeyUp);
+            tb_roman.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tb_roman.Font = new Font("Arial Narrow", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tb_roman.Location = new Point(16, 13);
+            tb_roman.Margin = new Padding(4);
+            tb_roman.Multiline = true;
+            tb_roman.Name = "tb_roman";
+            tb_roman.Size = new Size(666, 173);
+            tb_roman.TabIndex = 0;
+            tb_roman.TextChanged += tb_roman_TextChanged;
+            tb_roman.KeyUp += input_KeyUp;
             // 
             // tabpage_regex
             // 
-            this.tabpage_regex.Controls.Add(this.tb_regexTarget);
-            this.tabpage_regex.Location = new System.Drawing.Point(4, 28);
-            this.tabpage_regex.Name = "tabpage_regex";
-            this.tabpage_regex.Size = new System.Drawing.Size(572, 363);
-            this.tabpage_regex.TabIndex = 2;
-            this.tabpage_regex.Text = "Regex";
-            this.tabpage_regex.UseVisualStyleBackColor = true;
+            tabpage_regex.Controls.Add(tb_regexTarget);
+            tabpage_regex.Location = new Point(4, 33);
+            tabpage_regex.Margin = new Padding(4);
+            tabpage_regex.Name = "tabpage_regex";
+            tabpage_regex.Size = new Size(701, 490);
+            tabpage_regex.TabIndex = 2;
+            tabpage_regex.Text = "Regex";
+            tabpage_regex.UseVisualStyleBackColor = true;
             // 
             // tb_regexTarget
             // 
-            this.tb_regexTarget.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_regexTarget.Location = new System.Drawing.Point(10, 14);
-            this.tb_regexTarget.Multiline = true;
-            this.tb_regexTarget.Name = "tb_regexTarget";
-            this.tb_regexTarget.Size = new System.Drawing.Size(554, 341);
-            this.tb_regexTarget.TabIndex = 4;
+            tb_regexTarget.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tb_regexTarget.HideSelection = false;
+            tb_regexTarget.Location = new Point(12, 19);
+            tb_regexTarget.Margin = new Padding(4);
+            tb_regexTarget.Multiline = true;
+            tb_regexTarget.Name = "tb_regexTarget";
+            tb_regexTarget.Size = new Size(676, 453);
+            tb_regexTarget.TabIndex = 4;
             // 
             // LoveStringHForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(578, 394);
-            this.Controls.Add(this.tabcontrol_main);
-            this.MinimumSize = new System.Drawing.Size(600, 450);
-            this.Name = "LoveStringHForm";
-            this.Text = "LoveStringH";
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.form_KeyUp);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeDecode)).EndInit();
-            this.tabcontrol_main.ResumeLayout(false);
-            this.tabpage_codepoint.ResumeLayout(false);
-            this.tabpage_codepoint.PerformLayout();
-            this.tabpage_translit.ResumeLayout(false);
-            this.tabpage_translit.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fontsizeTranslit)).EndInit();
-            this.tabpage_regex.ResumeLayout(false);
-            this.tabpage_regex.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(11F, 24F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(706, 525);
+            Controls.Add(tabcontrol_main);
+            KeyPreview = true;
+            Margin = new Padding(4);
+            MinimumSize = new Size(728, 581);
+            Name = "LoveStringHForm";
+            Text = "LoveStringH";
+            KeyUp += form_KeyUp;
+            ((System.ComponentModel.ISupportInitialize)nud_fontsizeDecode).EndInit();
+            tabcontrol_main.ResumeLayout(false);
+            tabpage_codepoint.ResumeLayout(false);
+            tabpage_codepoint.PerformLayout();
+            tabpage_translit.ResumeLayout(false);
+            tabpage_translit.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)nud_fontsizeTranslit).EndInit();
+            tabpage_regex.ResumeLayout(false);
+            tabpage_regex.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
-using static LoveStringH.Encoder.EscapeStyle;
 
 namespace LoveStringH {
     public class Encoder {
@@ -36,10 +33,10 @@ namespace LoveStringH {
             new Regex("\\\\([0-7]{1,3})|\\\\x([A-Fa-f0-9]+)|%([A-Fa-f0-9]{2})|\\\\u([A-Fa-f0-9]{4})|\\\\U([A-Fa-f0-9]{8})|&#(\\d+);|&#x([A-Fa-f0-9]+);");
 
         public string name { get; }
-        readonly Encoding e;
+        readonly Encoding?e;
         public readonly EscapeStyle[] styles;
 
-        Encoder(string name, Encoding e, EscapeStyle[] styles) {
+        Encoder(string name, Encoding?e, EscapeStyle[] styles) {
             this.name = name; this.e = e; this.styles = styles;
         }
 

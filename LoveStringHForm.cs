@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Text;
 
 namespace LoveStringH {
     public partial class LoveStringHForm:Form {
-        static private readonly InstalledFontCollection fonts = new InstalledFontCollection();
+        static private readonly System.Drawing.Text.InstalledFontCollection fonts = new();
 
         private bool stopTextChangedOnce;
         private bool stopEscapeStyleChangedOnce;
@@ -20,15 +11,14 @@ namespace LoveStringH {
 
         public LoveStringHForm() {
             InitializeComponent();
-            //System.Windows.Controls.Primitives.TextBoxBase.IsInactiveSelectionHighlightEnabled = true;
-            //tb_regexTarget.IsInactiveSelectionHighlightEnabled;
 
             formRegex = new FormRegex();
             AddOwnedForm(formRegex);
 
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             cb_encoding.DataSource = Encoder.all;
             cb_transliterator.DataSource = Transliterator.all;
-            cb_escapeStyle.DataSource = ((Encoder)cb_encoding.SelectedItem).styles;
+            cb_escapeStyle.DataSource = ((Encoder)cb_encoding.SelectedItem!).styles;
             {
                 FontFamily[] families = fonts.Families;
                 cb_fontDecode.DataSource = cb_fontTranslit.DataSource = families;
@@ -38,37 +28,35 @@ namespace LoveStringH {
                 translitFontChanged(this, new EventArgs());
             }
             
-            cb_escapeStyle.SelectedIndexChanged += new System.EventHandler(cb_escapeStyle_SelectedIndexChanged);
-            cb_encoding.SelectedIndexChanged += new System.EventHandler(cb_encoding_SelectedIndexChanged);
-            cb_transliterator.SelectedIndexChanged += new System.EventHandler(tb_roman_TextChanged);
-            cb_fontDecode.SelectedIndexChanged += new System.EventHandler(encodingFontChanged);
-
-            KeyPreview = true;
+            cb_escapeStyle.SelectedIndexChanged += new(cb_escapeStyle_SelectedIndexChanged);
+            cb_encoding.SelectedIndexChanged += new(cb_encoding_SelectedIndexChanged);
+            cb_transliterator.SelectedIndexChanged += new(tb_roman_TextChanged);
+            cb_fontDecode.SelectedIndexChanged += new(encodingFontChanged);
 
             stopTextChangedOnce = false;
             stopEscapeStyleChangedOnce = false;
         }
 
-        private void tb_main_TextChanged(object sender, EventArgs e) {
+        private void tb_main_TextChanged(object?sender, EventArgs e) {
             if (stopTextChangedOnce) return;
             stopTextChangedOnce = true;
-            tb_byte.Text = ((Encoder)cb_encoding.SelectedItem).encode(
+            tb_byte.Text = ((Encoder)cb_encoding.SelectedItem!).encode(
                 tb_main.Text,
-                ((Encoder.EscapeStyle)cb_escapeStyle.SelectedItem).escape);
+                ((Encoder.EscapeStyle)cb_escapeStyle.SelectedItem!).escape);
             stopTextChangedOnce = false;
             ch_keepText.Checked = true;
         }
 
-        private void tb_byte_TextChanged(object sender, EventArgs e) {
+        private void tb_byte_TextChanged(object?sender, EventArgs e) {
             if (stopTextChangedOnce) return;
             stopTextChangedOnce = true;
-            tb_main.Text = ((Encoder)cb_encoding.SelectedItem).decode(tb_byte.Text);
+            tb_main.Text = ((Encoder)cb_encoding.SelectedItem!).decode(tb_byte.Text);
             stopTextChangedOnce = false;
             ch_keepText.Checked = false;
         }
 
-        private void cb_encoding_SelectedIndexChanged(object sender, EventArgs e) {
-            Encoder.EscapeStyle[] styles = ((Encoder)cb_encoding.SelectedItem).styles;
+        private void cb_encoding_SelectedIndexChanged(object?sender, EventArgs e) {
+            Encoder.EscapeStyle[] styles = ((Encoder)cb_encoding.SelectedItem!).styles;
             if (cb_escapeStyle.DataSource != styles) {
                 stopEscapeStyleChangedOnce = true;
                 cb_escapeStyle.DataSource = styles;
@@ -78,23 +66,23 @@ namespace LoveStringH {
             else tb_byte_TextChanged(sender, e);
         }
 
-        private void cb_escapeStyle_SelectedIndexChanged(object sender, EventArgs e) {
+        private void cb_escapeStyle_SelectedIndexChanged(object?sender, EventArgs e) {
             if (stopEscapeStyleChangedOnce) return;
             tb_main_TextChanged(sender, e);
         }
 
-        private void encodingFontChanged(object sender, EventArgs e) {
-            tb_main.Font = new Font((FontFamily)cb_fontDecode.SelectedItem, (float)nud_fontsizeDecode.Value);
+        private void encodingFontChanged(object?sender, EventArgs e) {
+            tb_main.Font = new Font((FontFamily)cb_fontDecode.SelectedItem!, (float)nud_fontsizeDecode.Value);
         }
-        private void translitFontChanged(object sender, EventArgs e) {
-            tb_nonroman.Font = new Font((FontFamily)cb_fontTranslit.SelectedItem, (float)nud_fontsizeTranslit.Value);
-        }
-
-        private void tb_roman_TextChanged(object sender, EventArgs e) {
-            tb_nonroman.Text = ((Transliterator)cb_transliterator.SelectedItem).GetTranslit(tb_roman.Text);
+        private void translitFontChanged(object?sender, EventArgs e) {
+            tb_nonroman.Font = new Font((FontFamily)cb_fontTranslit.SelectedItem!, (float)nud_fontsizeTranslit.Value);
         }
 
-        private void tabcontrol_main_Selected(object sender, TabControlEventArgs e) {
+        private void tb_roman_TextChanged(object?sender, EventArgs e) {
+            tb_nonroman.Text = ((Transliterator)cb_transliterator.SelectedItem!).GetTranslit(tb_roman.Text);
+        }
+
+        private void tabcontrol_main_Selected(object?sender, TabControlEventArgs e) {
             if (e.TabPage == tabpage_regex) {
                 formRegex.Show();
                 if (WindowState == FormWindowState.Normal) {
@@ -104,11 +92,11 @@ namespace LoveStringH {
                 }
             }
         }
-        private void tabcontrol_main_Deselected(object sender, TabControlEventArgs e) {
+        private void tabcontrol_main_Deselected(object?sender, TabControlEventArgs e) {
             if (e.TabPage == tabpage_regex) formRegex.Hide();
         }
 
-        private void form_KeyUp(object sender, KeyEventArgs e) {
+        private void form_KeyUp(object?sender, KeyEventArgs e) {
             if (e.Modifiers == Keys.Alt) {
                 switch (e.KeyCode) {
                     case Keys.L:
@@ -145,7 +133,7 @@ namespace LoveStringH {
             }
         }
 
-        private void input_KeyUp(object sender, KeyEventArgs e) {
+        private void input_KeyUp(object?sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.F2) {
                 Clipboard.SetText(tb_nonroman.Text);
                 tb_roman.SelectAll();

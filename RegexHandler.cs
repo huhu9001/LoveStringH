@@ -11,14 +11,14 @@ namespace LoveStringH {
 
         private bool emptyMatch;
 
+        public RegexHandler() { text = ""; regex = ""; repl = ""; }
+
         public void setText(string text, int start, int end) {
             if (this.text == text && this.end == end && this.start == start) return;
             this.text = text;
             this.end = end <= text.Length ? end : 0;
             this.start = start <= this.end ? start : 0;
             emptyMatch = false;
-        }
-        public void setSelection(int start, int end) {
         }
         public ResultCode findNext() /*throws*/ {
             Regex reg = new Regex(regex);

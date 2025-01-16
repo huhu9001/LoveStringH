@@ -25,123 +25,128 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.cb_savedRegex = new System.Windows.Forms.ComboBox();
-            this.b_saveRegex = new System.Windows.Forms.Button();
-            this.tb_regex = new System.Windows.Forms.TextBox();
-            this.tb_repl = new System.Windows.Forms.TextBox();
-            this.b_findNext = new System.Windows.Forms.Button();
-            this.b_replace = new System.Windows.Forms.Button();
-            this.b_replaceAll = new System.Windows.Forms.Button();
-            this.lb_msgRegex = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            cb_savedRegex = new ComboBox();
+            b_saveRegex = new Button();
+            tb_regex = new TextBox();
+            tb_repl = new TextBox();
+            b_findNext = new Button();
+            b_replace = new Button();
+            b_replaceAll = new Button();
+            lb_msgRegex = new Label();
+            SuspendLayout();
             // 
             // cb_savedRegex
             // 
-            this.cb_savedRegex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cb_savedRegex.DisplayMember = "regex";
-            this.cb_savedRegex.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_savedRegex.FormattingEnabled = true;
-            this.cb_savedRegex.Location = new System.Drawing.Point(10, 12);
-            this.cb_savedRegex.Name = "cb_savedRegex";
-            this.cb_savedRegex.Size = new System.Drawing.Size(470, 26);
-            this.cb_savedRegex.TabIndex = 0;
+            cb_savedRegex.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cb_savedRegex.DisplayMember = "regex";
+            cb_savedRegex.DropDownStyle = ComboBoxStyle.DropDownList;
+            cb_savedRegex.FormattingEnabled = true;
+            cb_savedRegex.Location = new Point(12, 16);
+            cb_savedRegex.Margin = new Padding(4, 4, 4, 4);
+            cb_savedRegex.Name = "cb_savedRegex";
+            cb_savedRegex.Size = new Size(574, 32);
+            cb_savedRegex.TabIndex = 0;
             // 
             // b_saveRegex
             // 
-            this.b_saveRegex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.b_saveRegex.Location = new System.Drawing.Point(486, 7);
-            this.b_saveRegex.Name = "b_saveRegex";
-            this.b_saveRegex.Size = new System.Drawing.Size(100, 34);
-            this.b_saveRegex.TabIndex = 1;
-            this.b_saveRegex.Text = "Save";
-            this.b_saveRegex.UseVisualStyleBackColor = true;
-            this.b_saveRegex.Click += new System.EventHandler(this.b_saveRegex_Click);
+            b_saveRegex.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            b_saveRegex.Location = new Point(594, 9);
+            b_saveRegex.Margin = new Padding(4, 4, 4, 4);
+            b_saveRegex.Name = "b_saveRegex";
+            b_saveRegex.Size = new Size(122, 45);
+            b_saveRegex.TabIndex = 1;
+            b_saveRegex.Text = "Save";
+            b_saveRegex.UseVisualStyleBackColor = true;
+            b_saveRegex.Click += b_saveRegex_Click;
             // 
             // tb_regex
             // 
-            this.tb_regex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_regex.Location = new System.Drawing.Point(11, 45);
-            this.tb_regex.Name = "tb_regex";
-            this.tb_regex.Size = new System.Drawing.Size(575, 28);
-            this.tb_regex.TabIndex = 2;
-            this.tb_regex.Text = "(regex)";
-            this.tb_regex.TextChanged += new System.EventHandler(this.tb_regex_TextChanged);
+            tb_regex.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tb_regex.Location = new Point(13, 60);
+            tb_regex.Margin = new Padding(4, 4, 4, 4);
+            tb_regex.Name = "tb_regex";
+            tb_regex.Size = new Size(702, 30);
+            tb_regex.TabIndex = 2;
+            tb_regex.Text = "(regex)";
+            tb_regex.TextChanged += tb_regex_TextChanged;
             // 
             // tb_repl
             // 
-            this.tb_repl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_repl.Location = new System.Drawing.Point(11, 80);
-            this.tb_repl.Name = "tb_repl";
-            this.tb_repl.Size = new System.Drawing.Size(575, 28);
-            this.tb_repl.TabIndex = 3;
-            this.tb_repl.Text = "(replace)";
-            this.tb_repl.TextChanged += new System.EventHandler(this.tb_regex_TextChanged);
+            tb_repl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tb_repl.Location = new Point(13, 107);
+            tb_repl.Margin = new Padding(4, 4, 4, 4);
+            tb_repl.Name = "tb_repl";
+            tb_repl.Size = new Size(702, 30);
+            tb_repl.TabIndex = 3;
+            tb_repl.Text = "(replace)";
+            tb_repl.TextChanged += tb_regex_TextChanged;
             // 
             // b_findNext
             // 
-            this.b_findNext.Location = new System.Drawing.Point(11, 115);
-            this.b_findNext.Name = "b_findNext";
-            this.b_findNext.Size = new System.Drawing.Size(100, 34);
-            this.b_findNext.TabIndex = 5;
-            this.b_findNext.Text = "Find next";
-            this.b_findNext.UseVisualStyleBackColor = true;
-            this.b_findNext.Click += new System.EventHandler(this.b_findNext_Click);
+            b_findNext.Location = new Point(13, 153);
+            b_findNext.Margin = new Padding(4, 4, 4, 4);
+            b_findNext.Name = "b_findNext";
+            b_findNext.Size = new Size(122, 45);
+            b_findNext.TabIndex = 5;
+            b_findNext.Text = "Find next";
+            b_findNext.UseVisualStyleBackColor = true;
+            b_findNext.Click += b_findNext_Click;
             // 
             // b_replace
             // 
-            this.b_replace.Location = new System.Drawing.Point(117, 115);
-            this.b_replace.Name = "b_replace";
-            this.b_replace.Size = new System.Drawing.Size(100, 34);
-            this.b_replace.TabIndex = 6;
-            this.b_replace.Text = "Replace";
-            this.b_replace.UseVisualStyleBackColor = true;
-            this.b_replace.Click += new System.EventHandler(this.b_replace_Click);
+            b_replace.Location = new Point(143, 153);
+            b_replace.Margin = new Padding(4, 4, 4, 4);
+            b_replace.Name = "b_replace";
+            b_replace.Size = new Size(122, 45);
+            b_replace.TabIndex = 6;
+            b_replace.Text = "Replace";
+            b_replace.UseVisualStyleBackColor = true;
+            b_replace.Click += b_replace_Click;
             // 
             // b_replaceAll
             // 
-            this.b_replaceAll.Location = new System.Drawing.Point(223, 115);
-            this.b_replaceAll.Name = "b_replaceAll";
-            this.b_replaceAll.Size = new System.Drawing.Size(130, 34);
-            this.b_replaceAll.TabIndex = 7;
-            this.b_replaceAll.Text = "Replace all";
-            this.b_replaceAll.UseVisualStyleBackColor = true;
-            this.b_replaceAll.Click += new System.EventHandler(this.b_replaceAll_Click);
+            b_replaceAll.Location = new Point(273, 153);
+            b_replaceAll.Margin = new Padding(4, 4, 4, 4);
+            b_replaceAll.Name = "b_replaceAll";
+            b_replaceAll.Size = new Size(159, 45);
+            b_replaceAll.TabIndex = 7;
+            b_replaceAll.Text = "Replace all";
+            b_replaceAll.UseVisualStyleBackColor = true;
+            b_replaceAll.Click += b_replaceAll_Click;
             // 
             // lb_msgRegex
             // 
-            this.lb_msgRegex.AutoSize = true;
-            this.lb_msgRegex.Location = new System.Drawing.Point(359, 123);
-            this.lb_msgRegex.Name = "lb_msgRegex";
-            this.lb_msgRegex.Size = new System.Drawing.Size(0, 18);
-            this.lb_msgRegex.TabIndex = 8;
+            lb_msgRegex.AutoSize = true;
+            lb_msgRegex.Location = new Point(439, 164);
+            lb_msgRegex.Margin = new Padding(4, 0, 4, 0);
+            lb_msgRegex.Name = "lb_msgRegex";
+            lb_msgRegex.Size = new Size(0, 24);
+            lb_msgRegex.TabIndex = 8;
             // 
             // FormRegex
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(598, 154);
-            this.ControlBox = false;
-            this.Controls.Add(this.tb_regex);
-            this.Controls.Add(this.b_saveRegex);
-            this.Controls.Add(this.cb_savedRegex);
-            this.Controls.Add(this.tb_repl);
-            this.Controls.Add(this.b_findNext);
-            this.Controls.Add(this.b_replaceAll);
-            this.Controls.Add(this.b_replace);
-            this.Controls.Add(this.lb_msgRegex);
-            this.Name = "FormRegex";
-            this.Text = "Regular expression";
-            this.TopMost = true;
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(11F, 24F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(731, 205);
+            ControlBox = false;
+            Controls.Add(tb_regex);
+            Controls.Add(b_saveRegex);
+            Controls.Add(cb_savedRegex);
+            Controls.Add(tb_repl);
+            Controls.Add(b_findNext);
+            Controls.Add(b_replaceAll);
+            Controls.Add(b_replace);
+            Controls.Add(lb_msgRegex);
+            Margin = new Padding(4, 4, 4, 4);
+            Name = "FormRegex";
+            Text = "Regular expression";
+            TopMost = true;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-        
+
         private System.Windows.Forms.TextBox tb_regex;
         private System.Windows.Forms.Button b_saveRegex;
         private System.Windows.Forms.ComboBox cb_savedRegex;

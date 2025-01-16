@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LoveStringH {
@@ -14,7 +13,7 @@ namespace LoveStringH {
 
         public class RegexItem {
             public readonly Regex re;
-            public readonly MatchEvaluator me;
+            public readonly Func<Match, string?> me;
 
             readonly string s_replace;
             string m_replaceS(Match m) {
@@ -25,24 +24,22 @@ namespace LoveStringH {
             }
 
             readonly Dictionary<string, string> dict_replace;
-            string m_replaceD(Match m) {
+            string?m_replaceD(Match m) {
                 if (dict_replace.ContainsKey(m.Value)) return dict_replace[m.Value];
                 else return null;
             }
 
-            public RegexItem(string regexpr, MatchEvaluator replace) {
-                re = new Regex(regexpr);
-                me = replace;
+            public RegexItem(string regexpr, Func<Match, string?> replace) {
+                re = new Regex(regexpr); me = replace;
+                s_replace = ""; dict_replace = new();
             }
             public RegexItem(string regexpr, string replace) {
-                re = new Regex(regexpr);
-                s_replace = replace;
-                me = m_replaceS;
+                re = new Regex(regexpr); me = m_replaceS;
+                s_replace = replace; dict_replace = new();
             }
             public RegexItem(string regexpr, Dictionary<string, string> replace) {
-                re = new Regex(regexpr);
-                dict_replace = replace;
-                me = m_replaceD;
+                re = new Regex(regexpr); me = m_replaceD;
+                s_replace = ""; dict_replace = replace;
             }
         }
 
@@ -61,7 +58,7 @@ namespace LoveStringH {
             Match m;
 
             while (i0 < s.Length) {
-                string ss = null;
+                string?ss = null;
                 foreach (RegexItem td in tData) {
                     m = td.re.Match(s, i0);
                     if (m.Index == i0) {

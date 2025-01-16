@@ -29,13 +29,12 @@ namespace LoveStringH {
         public FormRegex() {
             InitializeComponent();
             
-            regexes = new List<RegexItem> { new RegexItem("(new regex)", null) };
+            regexes = new List<RegexItem> { new RegexItem("(new regex)", "") };
             try {
                 StreamReader regfile =
                     new StreamReader(File.Open(REGFILE_PATH, FileMode.OpenOrCreate, FileAccess.Read));
-                while (!regfile.EndOfStream) {
-                    string regex = regfile.ReadLine();
-                    string repl = regfile.ReadLine();
+                for (string?regex; (regex = regfile.ReadLine()) != null;) {
+                    string?repl = regfile.ReadLine();
                     if (repl == null) break;
                     regexes.Add(new RegexItem(regex, repl));
                 }
@@ -49,7 +48,7 @@ namespace LoveStringH {
             noevent_tb_regex = false;
         }
 
-        private new LoveStringHForm Owner { get => (LoveStringHForm)base.Owner; }
+        private new LoveStringHForm Owner { get => (LoveStringHForm)base.Owner!; }
         
         private void loadRegexInput() {
             re.regex = tb_regex.Text;
@@ -60,7 +59,7 @@ namespace LoveStringH {
                 Owner.tb_regexTarget.SelectionStart + ((LoveStringHForm)Owner).tb_regexTarget.SelectionLength);
         }
 
-        private void b_findNext_Click(object sender, EventArgs e) {
+        private void b_findNext_Click(object?sender, EventArgs e) {
             loadRegexInput();
             RegexHandler.ResultCode r;
             try { r = re.findNext(); } catch(Exception err) {
@@ -76,9 +75,8 @@ namespace LoveStringH {
                     break;
             }
             Owner.tb_regexTarget.Select(re.start, re.end - re.start);
-            Owner.Focus();
         }
-        private void b_replace_Click(object sender, EventArgs e) {
+        private void b_replace_Click(object?sender, EventArgs e) {
             loadRegexInput();
             RegexHandler.ResultCode r;
             try { r = re.replace(); } catch(Exception err) {
@@ -95,9 +93,8 @@ namespace LoveStringH {
             }
             Owner.tb_regexTarget.Text = re.text;
             Owner.tb_regexTarget.Select(re.start, re.end - re.start);
-            Owner.Focus();
         }
-        private void b_replaceAll_Click(object sender, EventArgs e) {
+        private void b_replaceAll_Click(object?sender, EventArgs e) {
             loadRegexInput();
             int count;
             try { count = re.replaceAll(); } catch(Exception err) {
@@ -108,17 +105,17 @@ namespace LoveStringH {
             Owner.tb_regexTarget.Select(re.start, re.end - re.start);
         }
 
-        private void tb_regex_TextChanged(object sender, EventArgs e) {
+        private void tb_regex_TextChanged(object?sender, EventArgs e) {
             if (noevent_tb_regex) return;
             cb_savedRegex.SelectedIndex = 0;
         }
 
-        private void cb_savedRegex_SelectedIndexChanged(object sender, EventArgs e) {
+        private void cb_savedRegex_SelectedIndexChanged(object?sender, EventArgs e) {
             if (noevent_cb_savedRegex) return;
             if (cb_savedRegex.SelectedIndex == 0) b_saveRegex.Text = "Save";
             else {
                 b_saveRegex.Text = "Delete";
-                RegexItem item = (RegexItem)cb_savedRegex.SelectedItem;
+                RegexItem item = (RegexItem)cb_savedRegex.SelectedItem!;
                 noevent_tb_regex = true;
                 tb_regex.Text = item.regex;
                 tb_repl.Text = item.repl;
@@ -126,7 +123,7 @@ namespace LoveStringH {
             }
         }
 
-        private void b_saveRegex_Click(object sender, EventArgs e) {
+        private void b_saveRegex_Click(object?sender, EventArgs e) {
             if (cb_savedRegex.SelectedIndex == 0) {
                 string regex = tb_regex.Text;
                 string repl = tb_repl.Text;

@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace LoveStringH
-{
-    static class Program
-    {
+namespace LoveStringH {
+    internal static class Program {
         /// <summary>
-        /// 应用程序的主入口点。
+        ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        static void Main() {
+            ApplicationConfiguration.Initialize();
             Application.Run(new LoveStringHForm());
         }
     }

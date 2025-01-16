@@ -95,7 +95,7 @@ namespace LoveStringH {
             }),
         };
 
-        static string GetSyllable(Match m) {
+        static string?GetSyllable(Match m) {
             int initial;
             switch (m.Groups[1].Value) {
                 default: return null;
@@ -182,7 +182,7 @@ namespace LoveStringH {
             return ((char)(0xAC00 + initial * 0x24C + median * 0x1C + coda)).ToString();
         }
 
-        static string GetSyllableArchaic(Match m) {
+        static string?GetSyllableArchaic(Match m) {
             string initial;
             switch (m.Groups[1].Value) {
                 default: return null;

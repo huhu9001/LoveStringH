@@ -94,7 +94,7 @@ namespace LoveStringH {
             }),
         };
 
-            static string GetVowel1(Match m) {
+            static string?GetVowel1(Match m) {
                 int i1, i2;
 
                 switch (m.Groups[1].Value) {
@@ -129,7 +129,7 @@ namespace LoveStringH {
                 return ((char)(i1 + i2 + (m.Groups[2].Value == ")" ? 0 : 1))).ToString();
             }
 
-            static string GetVowel2(Match m) {
+            static string?GetVowel2(Match m) {
                 int i1;
                 switch (m.Groups[1].Value) {
                     default: return null;
@@ -153,7 +153,7 @@ namespace LoveStringH {
                 return ((char)(i1 + (m.Groups[2].Value == ")" ? 0 : 1))).ToString();
             }
 
-            static string GetVowel3(Match m) {
+            static string?GetVowel3(Match m) {
                 switch (m.Groups[1].Value) {
                     default: return null;
                     case "": return "\u1F59";
