@@ -128,14 +128,35 @@ namespace LoveStringH {
                 string regex = tb_regex.Text;
                 string repl = tb_repl.Text;
                 int i = regexes.FindIndex(item => regex.CompareTo(item.regex) < 0);
-                regexes.Insert(i, new RegexItem(regex, repl));
-                noevent_cb_savedRegex = true;
-                cb_savedRegex.SelectedIndex = i;
-                noevent_cb_savedRegex = false;
+                if (i == -1) {
+                    regexes.Add(new RegexItem(regex, repl));
+                    noevent_cb_savedRegex = true;
+                    cb_savedRegex.DataSource = null;
+                    cb_savedRegex.DataSource = regexes;
+                    cb_savedRegex.DisplayMember = "regex";
+                    cb_savedRegex.SelectedIndex = regexes.Count - 1;
+                    noevent_cb_savedRegex = false;
+                }
+                else {
+                    regexes.Insert(i, new RegexItem(regex, repl));
+                    noevent_cb_savedRegex = true;
+                    cb_savedRegex.DataSource = null;
+                    cb_savedRegex.DataSource = regexes;
+                    cb_savedRegex.DisplayMember = "regex";
+                    cb_savedRegex.SelectedIndex = i;
+                    noevent_cb_savedRegex = false;
+                }
+                b_saveRegex.Text = "Delete";
             }
             else {
                 regexes.RemoveAt(cb_savedRegex.SelectedIndex);
+                noevent_cb_savedRegex = true;
+                cb_savedRegex.DataSource = null;
+                cb_savedRegex.DataSource = regexes;
+                cb_savedRegex.DisplayMember = "regex";
                 cb_savedRegex.SelectedIndex = 0;
+                noevent_cb_savedRegex = false;
+                b_saveRegex.Text = "Save";
             }
 
             try {

@@ -30,7 +30,7 @@ namespace LoveStringH {
         };
 
         static readonly Regex rgxEscape =
-            new Regex("\\\\([0-7]{1,3})|\\\\x([A-Fa-f0-9]+)|%([A-Fa-f0-9]{2})|\\\\u([A-Fa-f0-9]{4})|\\\\U([A-Fa-f0-9]{8})|&#(\\d+);|&#x([A-Fa-f0-9]+);");
+            new Regex("\\\\([0-7]{1,3})|\\\\x([A-Fa-f0-9]{1,8})|%([A-Fa-f0-9]{2})|\\\\u([A-Fa-f0-9]{4})|\\\\U([A-Fa-f0-9]{8})|&#(\\d{1,10});|&#x([A-Fa-f0-9]{1,8});");
 
         public string name { get; }
         readonly Encoding?e;

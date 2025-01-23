@@ -30,15 +30,15 @@ namespace LoveStringH {
             }
 
             public RegexItem(string regexpr, Func<Match, string?> replace) {
-                re = new Regex(regexpr); me = replace;
+                re = new Regex($"\\G{regexpr}"); me = replace;
                 s_replace = ""; dict_replace = new();
             }
             public RegexItem(string regexpr, string replace) {
-                re = new Regex(regexpr); me = m_replaceS;
+                re = new Regex($"\\G{regexpr}"); me = m_replaceS;
                 s_replace = replace; dict_replace = new();
             }
             public RegexItem(string regexpr, Dictionary<string, string> replace) {
-                re = new Regex(regexpr); me = m_replaceD;
+                re = new Regex($"\\G{regexpr}"); me = m_replaceD;
                 s_replace = ""; dict_replace = replace;
             }
         }
@@ -61,7 +61,7 @@ namespace LoveStringH {
                 string?ss = null;
                 foreach (RegexItem td in tData) {
                     m = td.re.Match(s, i0);
-                    if (m.Index == i0) {
+                    if (m.Success) {
                         if (m.Length == 0) {
                             if (!emptyMatch) {
                                 ss = td.me(m);
