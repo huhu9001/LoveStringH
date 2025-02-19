@@ -1,47 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace LoveStringH {
+﻿namespace LoveStringH {
     public partial class FormRegex:Form {
-        private const string REGFILE_PATH = "reg.txt";
-
-        private readonly RegexHandler re = new RegexHandler();
-        private class RegexItem {
+        internal const string REGFILE_PATH = "reg.txt";
+        internal class SavedRegex {
             public string regex { get; }
             public string repl { get; }
-            public RegexItem(string regex, string repl) {
+            public SavedRegex(string regex, string repl) {
                 this.regex = regex; this.repl = repl;
             }
         }
-        private List<RegexItem> regexes;
+
+        internal bool regex_changed = false;
+
+        private readonly RegexHandler re = new RegexHandler();
+        //private List<RegexItem> regexes;
 
         private bool noevent_cb_savedRegex;
         private bool noevent_tb_regex;
 
         public FormRegex() {
             InitializeComponent();
-            
-            regexes = new List<RegexItem> { new RegexItem("(new regex)", "") };
+
+            cb_savedRegex.Items.Add(new SavedRegex("(new regex)", ""));
             try {
                 StreamReader regfile =
                     new StreamReader(File.Open(REGFILE_PATH, FileMode.OpenOrCreate, FileAccess.Read));
                 for (string?regex; (regex = regfile.ReadLine()) != null;) {
                     string?repl = regfile.ReadLine();
                     if (repl == null) break;
-                    regexes.Add(new RegexItem(regex, repl));
+                    cb_savedRegex.Items.Add(new SavedRegex(regex, repl));
                 }
                 regfile.Close();
             }
             catch (Exception err) { lb_msgRegex.Text = err.Message; }
-            cb_savedRegex.DataSource = regexes;
+            cb_savedRegex.SelectedIndex = 0;
             cb_savedRegex.SelectedIndexChanged += cb_savedRegex_SelectedIndexChanged;
 
             noevent_cb_savedRegex = false;
@@ -115,7 +106,7 @@ namespace LoveStringH {
             if (cb_savedRegex.SelectedIndex == 0) b_saveRegex.Text = "Save";
             else {
                 b_saveRegex.Text = "Delete";
-                RegexItem item = (RegexItem)cb_savedRegex.SelectedItem!;
+                SavedRegex item = (SavedRegex)cb_savedRegex.SelectedItem!;
                 noevent_tb_regex = true;
                 tb_regex.Text = item.regex;
                 tb_repl.Text = item.repl;
@@ -127,47 +118,26 @@ namespace LoveStringH {
             if (cb_savedRegex.SelectedIndex == 0) {
                 string regex = tb_regex.Text;
                 string repl = tb_repl.Text;
-                int i = regexes.FindIndex(item => regex.CompareTo(item.regex) < 0);
-                if (i == -1) {
-                    regexes.Add(new RegexItem(regex, repl));
-                    noevent_cb_savedRegex = true;
-                    cb_savedRegex.DataSource = null;
-                    cb_savedRegex.DataSource = regexes;
-                    cb_savedRegex.DisplayMember = "regex";
-                    cb_savedRegex.SelectedIndex = regexes.Count - 1;
-                    noevent_cb_savedRegex = false;
+                int i = 0;
+                foreach (var item in cb_savedRegex.Items) {
+                    if (regex.CompareTo(((SavedRegex)item).regex) < 0) break;
+                    i += 1;
                 }
-                else {
-                    regexes.Insert(i, new RegexItem(regex, repl));
-                    noevent_cb_savedRegex = true;
-                    cb_savedRegex.DataSource = null;
-                    cb_savedRegex.DataSource = regexes;
-                    cb_savedRegex.DisplayMember = "regex";
-                    cb_savedRegex.SelectedIndex = i;
-                    noevent_cb_savedRegex = false;
-                }
+                noevent_cb_savedRegex = true;
+                cb_savedRegex.Items.Insert(i, new SavedRegex(regex, repl));
+                cb_savedRegex.SelectedIndex = i;
+                noevent_cb_savedRegex = false;
                 b_saveRegex.Text = "Delete";
             }
             else {
-                regexes.RemoveAt(cb_savedRegex.SelectedIndex);
                 noevent_cb_savedRegex = true;
-                cb_savedRegex.DataSource = null;
-                cb_savedRegex.DataSource = regexes;
-                cb_savedRegex.DisplayMember = "regex";
+                cb_savedRegex.Items.RemoveAt(cb_savedRegex.SelectedIndex);
                 cb_savedRegex.SelectedIndex = 0;
                 noevent_cb_savedRegex = false;
                 b_saveRegex.Text = "Save";
             }
 
-            try {
-                StreamWriter regfile = new StreamWriter(File.Open(REGFILE_PATH, FileMode.Create, FileAccess.Write));
-                foreach (RegexItem item in regexes.Skip(1)) {
-                    regfile.WriteLine(item.regex);
-                    regfile.WriteLine(item.repl);
-                }
-                regfile.Close();
-            }
-            catch (Exception err) { lb_msgRegex.Text = err.Message; }
+            regex_changed = true;
         }
     }
 }

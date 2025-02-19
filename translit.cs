@@ -17,16 +17,13 @@ namespace LoveStringH {
 
             readonly string s_replace;
             string m_replaceS(Match m) {
-                string m_replace_dollar(Match mm) {
-                    return m.Groups[int.Parse(mm.Groups[1].Value)].Value;
-                }
-                return Regex.Replace(s_replace, "\\$(\\d+)", m_replace_dollar);
+                return Regex.Replace(s_replace, "\\$(\\d+)", mm =>
+                    m.Groups[int.Parse(mm.Groups[1].ValueSpan)].Value);
             }
 
             readonly Dictionary<string, string> dict_replace;
             string?m_replaceD(Match m) {
-                if (dict_replace.ContainsKey(m.Value)) return dict_replace[m.Value];
-                else return null;
+                return dict_replace.GetValueOrDefault(m.Value);
             }
 
             public RegexItem(string regexpr, Func<Match, string?> replace) {

@@ -35,6 +35,9 @@
             nud_fontsizeDecode = new NumericUpDown();
             tabcontrol_main = new TabControl();
             tabpage_codepoint = new TabPage();
+            lb_doNotEncodeEnd = new Label();
+            tb_doNotEncode = new TextBox();
+            lb_doNotEncode = new Label();
             cb_fontDecode = new ComboBox();
             tabpage_translit = new TabPage();
             nud_fontsizeTranslit = new NumericUpDown();
@@ -59,29 +62,31 @@
             tb_main.Margin = new Padding(4);
             tb_main.Multiline = true;
             tb_main.Name = "tb_main";
-            tb_main.ScrollBars = ScrollBars.Vertical;
-            tb_main.Size = new Size(681, 192);
+            tb_main.ScrollBars = ScrollBars.Both;
+            tb_main.Size = new Size(681, 144);
             tb_main.TabIndex = 0;
             tb_main.TextChanged += tb_main_TextChanged;
+            tb_main.KeyUp += input_KeyUp_char;
             // 
             // tb_byte
             // 
             tb_byte.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tb_byte.Location = new Point(9, 295);
+            tb_byte.Location = new Point(7, 276);
             tb_byte.Margin = new Padding(4);
             tb_byte.Multiline = true;
             tb_byte.Name = "tb_byte";
             tb_byte.ScrollBars = ScrollBars.Vertical;
-            tb_byte.Size = new Size(682, 184);
+            tb_byte.Size = new Size(684, 203);
             tb_byte.TabIndex = 9;
             tb_byte.TextChanged += tb_byte_TextChanged;
+            tb_byte.KeyUp += input_KeyUp_byte;
             // 
             // cb_escapeStyle
             // 
             cb_escapeStyle.DisplayMember = "name";
             cb_escapeStyle.DropDownStyle = ComboBoxStyle.DropDownList;
             cb_escapeStyle.FormattingEnabled = true;
-            cb_escapeStyle.Location = new Point(174, 204);
+            cb_escapeStyle.Location = new Point(172, 160);
             cb_escapeStyle.Margin = new Padding(4);
             cb_escapeStyle.Name = "cb_escapeStyle";
             cb_escapeStyle.Size = new Size(85, 32);
@@ -92,7 +97,7 @@
             cb_encoding.DisplayMember = "name";
             cb_encoding.DropDownStyle = ComboBoxStyle.DropDownList;
             cb_encoding.FormattingEnabled = true;
-            cb_encoding.Location = new Point(9, 204);
+            cb_encoding.Location = new Point(7, 160);
             cb_encoding.Margin = new Padding(4);
             cb_encoding.Name = "cb_encoding";
             cb_encoding.Size = new Size(157, 32);
@@ -103,7 +108,7 @@
             ch_keepText.AutoSize = true;
             ch_keepText.Checked = true;
             ch_keepText.CheckState = CheckState.Checked;
-            ch_keepText.Location = new Point(266, 209);
+            ch_keepText.Location = new Point(265, 162);
             ch_keepText.Margin = new Padding(4);
             ch_keepText.Name = "ch_keepText";
             ch_keepText.Size = new Size(224, 28);
@@ -114,7 +119,7 @@
             // nud_fontsizeDecode
             // 
             nud_fontsizeDecode.DecimalPlaces = 1;
-            nud_fontsizeDecode.Location = new Point(507, 247);
+            nud_fontsizeDecode.Location = new Point(505, 201);
             nud_fontsizeDecode.Margin = new Padding(4);
             nud_fontsizeDecode.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nud_fontsizeDecode.Name = "nud_fontsizeDecode";
@@ -140,6 +145,9 @@
             // 
             // tabpage_codepoint
             // 
+            tabpage_codepoint.Controls.Add(lb_doNotEncodeEnd);
+            tabpage_codepoint.Controls.Add(tb_doNotEncode);
+            tabpage_codepoint.Controls.Add(lb_doNotEncode);
             tabpage_codepoint.Controls.Add(cb_fontDecode);
             tabpage_codepoint.Controls.Add(tb_main);
             tabpage_codepoint.Controls.Add(nud_fontsizeDecode);
@@ -156,17 +164,47 @@
             tabpage_codepoint.Text = "Codepoint";
             tabpage_codepoint.UseVisualStyleBackColor = true;
             // 
+            // lb_doNotEncodeEnd
+            // 
+            lb_doNotEncodeEnd.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lb_doNotEncodeEnd.AutoSize = true;
+            lb_doNotEncodeEnd.Location = new Point(625, 242);
+            lb_doNotEncodeEnd.Name = "lb_doNotEncodeEnd";
+            lb_doNotEncodeEnd.Size = new Size(16, 24);
+            lb_doNotEncodeEnd.TabIndex = 23;
+            lb_doNotEncodeEnd.Text = "]";
+            // 
+            // tb_doNotEncode
+            // 
+            tb_doNotEncode.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tb_doNotEncode.Location = new Point(178, 239);
+            tb_doNotEncode.Name = "tb_doNotEncode";
+            tb_doNotEncode.Size = new Size(441, 30);
+            tb_doNotEncode.TabIndex = 22;
+            tb_doNotEncode.Text = "\\x20\\r\\n";
+            tb_doNotEncode.TextChanged += cb_escapeStyle_SelectedIndexChanged;
+            // 
+            // lb_doNotEncode
+            // 
+            lb_doNotEncode.AutoSize = true;
+            lb_doNotEncode.Location = new Point(7, 242);
+            lb_doNotEncode.Name = "lb_doNotEncode";
+            lb_doNotEncode.Size = new Size(165, 24);
+            lb_doNotEncode.TabIndex = 21;
+            lb_doNotEncode.Text = "Do not encode: [^";
+            // 
             // cb_fontDecode
             // 
             cb_fontDecode.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cb_fontDecode.DisplayMember = "Name";
             cb_fontDecode.DropDownStyle = ComboBoxStyle.DropDownList;
             cb_fontDecode.FormattingEnabled = true;
-            cb_fontDecode.Location = new Point(9, 245);
+            cb_fontDecode.Location = new Point(7, 200);
             cb_fontDecode.Margin = new Padding(4);
             cb_fontDecode.Name = "cb_fontDecode";
             cb_fontDecode.Size = new Size(490, 32);
             cb_fontDecode.TabIndex = 20;
+            cb_fontDecode.SelectedIndexChanged += encodingFontChanged;
             // 
             // tabpage_translit
             // 
@@ -208,6 +246,7 @@
             cb_fontTranslit.Name = "cb_fontTranslit";
             cb_fontTranslit.Size = new Size(329, 32);
             cb_fontTranslit.TabIndex = 3;
+            cb_fontTranslit.SelectedIndexChanged += translitFontChanged;
             // 
             // cb_transliterator
             // 
@@ -278,6 +317,7 @@
             MinimumSize = new Size(728, 581);
             Name = "LoveStringHForm";
             Text = "LoveStringH";
+            FormClosing += this.formClosing;
             KeyUp += form_KeyUp;
             ((System.ComponentModel.ISupportInitialize)nud_fontsizeDecode).EndInit();
             tabcontrol_main.ResumeLayout(false);
@@ -310,6 +350,9 @@
         private System.Windows.Forms.NumericUpDown nud_fontsizeTranslit;
         private System.Windows.Forms.TabPage tabpage_regex;
         internal System.Windows.Forms.TextBox tb_regexTarget;
+        private TextBox tb_doNotEncode;
+        private Label lb_doNotEncode;
+        private Label lb_doNotEncodeEnd;
     }
 }
 

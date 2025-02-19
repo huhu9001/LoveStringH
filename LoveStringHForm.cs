@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static LoveStringH.Transliterator;
 
 namespace LoveStringH {
     public partial class LoveStringHForm:Form {
@@ -6,6 +7,7 @@ namespace LoveStringH {
 
         private bool stopTextChangedOnce;
         private bool stopEscapeStyleChangedOnce;
+        private Encoder.EscapeStyle[] currentStyles;
 
         private readonly FormRegex formRegex;
 
@@ -16,59 +18,92 @@ namespace LoveStringH {
             AddOwnedForm(formRegex);
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            cb_encoding.DataSource = Encoder.all;
-            cb_transliterator.DataSource = Transliterator.all;
-            cb_escapeStyle.DataSource = ((Encoder)cb_encoding.SelectedItem!).styles;
+            cb_encoding.Items.AddRange(Encoder.all);
+            cb_encoding.SelectedIndex = 0;
+
+            cb_transliterator.Items.AddRange(Transliterator.all);
+            cb_transliterator.SelectedIndex = 0;
+
+            currentStyles = ((Encoder)cb_encoding.SelectedItem!).styles;
+            cb_escapeStyle.Items.AddRange(currentStyles);
+            cb_escapeStyle.SelectedIndex = 0;
+
             {
                 FontFamily[] families = fonts.Families;
-                cb_fontDecode.DataSource = cb_fontTranslit.DataSource = families;
+                cb_fontDecode.Items.AddRange(families);
+                cb_fontTranslit.Items.AddRange(families);
                 cb_fontDecode.SelectedIndex = cb_fontTranslit.SelectedIndex =
                     Array.IndexOf(families, this.Font.FontFamily);
-                encodingFontChanged(this, new EventArgs());
-                translitFontChanged(this, new EventArgs());
             }
-            
+
             cb_escapeStyle.SelectedIndexChanged += new(cb_escapeStyle_SelectedIndexChanged);
             cb_encoding.SelectedIndexChanged += new(cb_encoding_SelectedIndexChanged);
             cb_transliterator.SelectedIndexChanged += new(tb_roman_TextChanged);
-            cb_fontDecode.SelectedIndexChanged += new(encodingFontChanged);
 
             stopTextChangedOnce = false;
             stopEscapeStyleChangedOnce = false;
         }
 
-        private void tb_main_TextChanged(object?sender, EventArgs e) {
-            if (stopTextChangedOnce) return;
+        private void formClosing(object?sender, EventArgs e) {
+            if (formRegex.regex_changed)
+                try {
+                    StreamWriter regfile = new StreamWriter(File.Open(
+                        FormRegex.REGFILE_PATH,
+                        FileMode.Create,
+                        FileAccess.Write));
+                    foreach (FormRegex.SavedRegex item in formRegex
+                        .cb_savedRegex.Items.Cast<FormRegex.SavedRegex>().Skip(1)) {
+                        regfile.WriteLine(item.regex);
+                        regfile.WriteLine(item.repl);
+                    }
+                    regfile.Close();
+                }
+                catch (Exception) { }
+        }
+
+        private void encode_text() {
             stopTextChangedOnce = true;
             tb_byte.Text = ((Encoder)cb_encoding.SelectedItem!).encode(
                 tb_main.Text,
-                ((Encoder.EscapeStyle)cb_escapeStyle.SelectedItem!).escape);
+                ((Encoder.EscapeStyle)cb_escapeStyle.SelectedItem!).escape,
+                tb_doNotEncode.Text);
             stopTextChangedOnce = false;
+        }
+        private void decode_text() {
+            stopTextChangedOnce = true;
+            tb_main.Text = ((Encoder)cb_encoding.SelectedItem!).decode(tb_byte.Text);
+            stopTextChangedOnce = false;
+        }
+
+        private void tb_main_TextChanged(object?sender, EventArgs e) {
+            if (stopTextChangedOnce) return;
+            encode_text();
             ch_keepText.Checked = true;
         }
 
         private void tb_byte_TextChanged(object?sender, EventArgs e) {
             if (stopTextChangedOnce) return;
-            stopTextChangedOnce = true;
-            tb_main.Text = ((Encoder)cb_encoding.SelectedItem!).decode(tb_byte.Text);
-            stopTextChangedOnce = false;
+            decode_text();
             ch_keepText.Checked = false;
         }
 
         private void cb_encoding_SelectedIndexChanged(object?sender, EventArgs e) {
             Encoder.EscapeStyle[] styles = ((Encoder)cb_encoding.SelectedItem!).styles;
-            if (cb_escapeStyle.DataSource != styles) {
+            if (currentStyles != styles) {
                 stopEscapeStyleChangedOnce = true;
-                cb_escapeStyle.DataSource = styles;
+                currentStyles = styles;
+                cb_escapeStyle.Items.Clear();
+                cb_escapeStyle.Items.AddRange(currentStyles);
+                cb_escapeStyle.SelectedIndex = 0;
                 stopEscapeStyleChangedOnce = false;
             }
-            if (ch_keepText.Checked) tb_main_TextChanged(sender, e);
-            else tb_byte_TextChanged(sender, e);
+            if (ch_keepText.Checked) encode_text();
+            else decode_text();
         }
 
         private void cb_escapeStyle_SelectedIndexChanged(object?sender, EventArgs e) {
             if (stopEscapeStyleChangedOnce) return;
-            tb_main_TextChanged(sender, e);
+            encode_text();
         }
 
         private void encodingFontChanged(object?sender, EventArgs e) {
@@ -99,6 +134,11 @@ namespace LoveStringH {
         private void form_KeyUp(object?sender, KeyEventArgs e) {
             if (e.Modifiers == Keys.Alt) {
                 switch (e.KeyCode) {
+                    case Keys.X:
+                        tabcontrol_main.SelectedIndex = 0;
+                        tb_byte.Focus();
+                        e.Handled = true;
+                        break;
                     case Keys.L:
                         tabcontrol_main.SelectedIndex = 1;
                         cb_transliterator.SelectedIndex = 0;
@@ -137,6 +177,21 @@ namespace LoveStringH {
             if (e.KeyCode == Keys.F2) {
                 Clipboard.SetText(tb_nonroman.Text);
                 tb_roman.SelectAll();
+                e.Handled = true;
+            }
+        }
+        private void input_KeyUp_char(object?sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.F2) {
+                Clipboard.SetText(tb_byte.Text);
+                tb_main.SelectAll();
+                e.Handled = true;
+            }
+        }
+        private void input_KeyUp_byte(object?sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.F2) {
+                Clipboard.SetText(tb_main.Text);
+                tb_byte.SelectAll();
+                e.Handled = true;
             }
         }
     }

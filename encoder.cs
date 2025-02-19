@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.ComponentModel;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LoveStringH {
@@ -10,18 +12,18 @@ namespace LoveStringH {
                 this.name = name; this.escape = escape;
             }
         }
-        static readonly EscapeStyle[] estylesDefault = new EscapeStyle[] {
+        static readonly EscapeStyle[] estylesDefault = new[] {
             new EscapeStyle("\\x", u => $"\\x{u:X}"),
             new EscapeStyle("%", u => $"%{u:X2}"),
         };
 
-        public static readonly Encoder[] all = new Encoder[] {
-            new Encoder("Unicode", null, new EscapeStyle[] {
+        public static readonly Encoder[] all = new[] {
+            new Encoder("Unicode", null, new[] {
                 new EscapeStyle("\\u", u => u < 0x80 ? $"\\x{u:X}" : u < 0x10000 ? $"\\u{u:X4}" : $"\\U{u:X8}"),
                 new EscapeStyle("&#x", u => $"&#x{u:X};"),
             }),
             new Encoder("UTF-8", Encoding.UTF8, estylesDefault ),
-            new Encoder("UTF-16", null, new EscapeStyle[] { estylesDefault[0] } ),
+            new Encoder("UTF-16", null, new[] { estylesDefault[0] } ),
             new Encoder("GB 18030", Encoding.GetEncoding(54936), estylesDefault ),
             new Encoder("GB 2312", Encoding.GetEncoding(936), estylesDefault ),
             new Encoder("Shift-JIS", Encoding.GetEncoding(932), estylesDefault ),
@@ -40,35 +42,42 @@ namespace LoveStringH {
             this.name = name; this.e = e; this.styles = styles;
         }
 
-        public string encode(string str, Func<uint, string> escape) {
-            StringBuilder s_result = new StringBuilder();
-            if (e == null) {
-                char surrogate = '\0';
-                foreach (char chr in str) {
-                    if (surrogate != '\0') {
-                        if (chr >= '\uDC00' && chr < '\uE000') {
-                            s_result.Append(escape(((uint)surrogate - 0xD7C0 << 10) + ((uint)chr - 0xDC00)));
-                            surrogate = '\0';
-                            continue;
+        public string encode(string str, Func<uint, string> escape, string str_ne) {
+            Regex re_ne;
+            try { re_ne = new($"[^{str_ne}]+"); }
+            catch (ArgumentException) { re_ne = new(".*+"); }
+
+            return re_ne.Replace(str, m => {
+                StringBuilder s_result = new();
+                if (e == null) {
+                    char surrogate = '\0';
+                    foreach (char chr in m.ValueSpan) {
+                        if (surrogate != '\0') {
+                            if (chr >= '\uDC00' && chr < '\uE000') {
+                                uint cp = ((uint)surrogate - 0xD7C0 << 10) + ((uint)chr - 0xDC00);
+                                s_result.Append(escape(cp));
+                                surrogate = '\0';
+                                continue;
+                            }
+                            else {
+                                s_result.Append(escape(surrogate));
+                                surrogate = '\0';
+                            }
                         }
-                        else {
-                            s_result.Append(escape(surrogate));
-                            surrogate = '\0';
-                        }
+                        if (name == "Unicode" && chr >= '\uD800' && chr < '\uDC00')
+                            surrogate = chr;
+                        else s_result.Append(escape(chr));
                     }
-                    if (name == "Unicode" && chr >= '\uD800' && chr < '\uDC00')
-                        surrogate = chr;
-                    else s_result.Append(escape(chr));
+                    if (surrogate != '\0') s_result.Append(escape(surrogate));
                 }
-                if (surrogate != '\0') s_result.Append(escape(surrogate));
-            }
-            else {
-                byte[] bs = e.GetBytes(str);
-                foreach(byte b in bs) {
-                    s_result.Append(escape(b));
+                else {
+                    byte[] bs = e.GetBytes(str, m.Index, m.Length);
+                    foreach (byte b in bs) {
+                        s_result.Append(escape(b));
+                    }
                 }
-            }
-            return s_result.ToString();
+                return s_result.ToString();
+            });
         }
 
         public string decode(string str) {

@@ -42,7 +42,7 @@
             cb_savedRegex.DropDownStyle = ComboBoxStyle.DropDownList;
             cb_savedRegex.FormattingEnabled = true;
             cb_savedRegex.Location = new Point(12, 16);
-            cb_savedRegex.Margin = new Padding(4, 4, 4, 4);
+            cb_savedRegex.Margin = new Padding(4);
             cb_savedRegex.Name = "cb_savedRegex";
             cb_savedRegex.Size = new Size(574, 32);
             cb_savedRegex.TabIndex = 0;
@@ -51,7 +51,7 @@
             // 
             b_saveRegex.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             b_saveRegex.Location = new Point(594, 9);
-            b_saveRegex.Margin = new Padding(4, 4, 4, 4);
+            b_saveRegex.Margin = new Padding(4);
             b_saveRegex.Name = "b_saveRegex";
             b_saveRegex.Size = new Size(122, 45);
             b_saveRegex.TabIndex = 1;
@@ -63,7 +63,7 @@
             // 
             tb_regex.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tb_regex.Location = new Point(13, 60);
-            tb_regex.Margin = new Padding(4, 4, 4, 4);
+            tb_regex.Margin = new Padding(4);
             tb_regex.Name = "tb_regex";
             tb_regex.Size = new Size(702, 30);
             tb_regex.TabIndex = 2;
@@ -74,7 +74,7 @@
             // 
             tb_repl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tb_repl.Location = new Point(13, 107);
-            tb_repl.Margin = new Padding(4, 4, 4, 4);
+            tb_repl.Margin = new Padding(4);
             tb_repl.Name = "tb_repl";
             tb_repl.Size = new Size(702, 30);
             tb_repl.TabIndex = 3;
@@ -84,7 +84,7 @@
             // b_findNext
             // 
             b_findNext.Location = new Point(13, 153);
-            b_findNext.Margin = new Padding(4, 4, 4, 4);
+            b_findNext.Margin = new Padding(4);
             b_findNext.Name = "b_findNext";
             b_findNext.Size = new Size(122, 45);
             b_findNext.TabIndex = 5;
@@ -95,7 +95,7 @@
             // b_replace
             // 
             b_replace.Location = new Point(143, 153);
-            b_replace.Margin = new Padding(4, 4, 4, 4);
+            b_replace.Margin = new Padding(4);
             b_replace.Name = "b_replace";
             b_replace.Size = new Size(122, 45);
             b_replace.TabIndex = 6;
@@ -106,7 +106,7 @@
             // b_replaceAll
             // 
             b_replaceAll.Location = new Point(273, 153);
-            b_replaceAll.Margin = new Padding(4, 4, 4, 4);
+            b_replaceAll.Margin = new Padding(4);
             b_replaceAll.Name = "b_replaceAll";
             b_replaceAll.Size = new Size(159, 45);
             b_replaceAll.TabIndex = 7;
@@ -137,7 +137,7 @@
             Controls.Add(b_replaceAll);
             Controls.Add(b_replace);
             Controls.Add(lb_msgRegex);
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             Name = "FormRegex";
             Text = "Regular expression";
             TopMost = true;
@@ -149,11 +149,11 @@
 
         private System.Windows.Forms.TextBox tb_regex;
         private System.Windows.Forms.Button b_saveRegex;
-        private System.Windows.Forms.ComboBox cb_savedRegex;
         private System.Windows.Forms.TextBox tb_repl;
         private System.Windows.Forms.Button b_findNext;
         private System.Windows.Forms.Button b_replaceAll;
         private System.Windows.Forms.Button b_replace;
         private System.Windows.Forms.Label lb_msgRegex;
+        internal ComboBox cb_savedRegex;
     }
 }
