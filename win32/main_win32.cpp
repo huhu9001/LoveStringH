@@ -1,7 +1,6 @@
 #include"../encoder.hpp"
 #include"../translit.hpp"
 
-//#include<Windows.h>
 #include<Windows.h>
 #include<CommCtrl.h>
 
@@ -48,15 +47,69 @@ static constexpr size_t ID_CBOX_SCRIPT = 302;
 static HWND hcbox_script;
 static size_t sel_script;
 
-static constexpr int HK_F2 = 100;
-static constexpr int HK_F3 = 101;
-static constexpr int HK_CTRL_A = 102;
-static constexpr int HK_ALT_X = 103;
-static constexpr int HK_ALT_L = 104;
-static constexpr int HK_ALT_G = 105;
-static constexpr int HK_ALT_R = 106;
-static constexpr int HK_ALT_A = 107;
-static constexpr int HK_ALT_K = 108;
+static constexpr int HK_F2 = 500;
+static constexpr int HK_F3 = 501;
+static constexpr int HK_CTRL_A = 502;;
+static constexpr int HK_ALT_Z = 503;
+static constexpr int HK_ALT_X = 504;
+static constexpr int HK_ALT_L = 505;
+static constexpr int HK_ALT_G = 506;
+static constexpr int HK_ALT_R = 507;
+static constexpr int HK_ALT_A = 508;
+static constexpr int HK_ALT_K = 509;
+
+static ACCEL accels[] = {
+	{
+		.fVirt = FVIRTKEY,
+		.key = VK_F2,
+		.cmd = HK_F2,
+	},
+	{
+		.fVirt = FVIRTKEY,
+		.key = VK_F3,
+		.cmd = HK_F3,
+	},
+	{
+		.fVirt = FVIRTKEY | FCONTROL,
+		.key = 'A',
+		.cmd = HK_CTRL_A,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'Z',
+		.cmd = HK_ALT_Z,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'X',
+		.cmd = HK_ALT_X,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'L',
+		.cmd = HK_ALT_L,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'G',
+		.cmd = HK_ALT_G,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'R',
+		.cmd = HK_ALT_R,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'A',
+		.cmd = HK_ALT_A,
+	},
+	{
+		.fVirt = FVIRTKEY | FALT,
+		.key = 'K',
+		.cmd = HK_ALT_K,
+	},
+};
 
 static wchar_t buff_in[0x10000];
 static wchar_t buff_in2[0x80];
@@ -457,16 +510,6 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 			hinstance,
 			nullptr);
 
-		RegisterHotKey(hWnd, HK_F2, MOD_NOREPEAT, VK_F2);
-		RegisterHotKey(hWnd, HK_F3, MOD_NOREPEAT, VK_F3);
-		RegisterHotKey(hWnd, HK_CTRL_A, MOD_NOREPEAT | MOD_CONTROL, 'A');
-		RegisterHotKey(hWnd, HK_ALT_X, MOD_NOREPEAT | MOD_ALT, 'X');
-		RegisterHotKey(hWnd, HK_ALT_L, MOD_NOREPEAT | MOD_ALT, 'L');
-		RegisterHotKey(hWnd, HK_ALT_G, MOD_NOREPEAT | MOD_ALT, 'G');
-		RegisterHotKey(hWnd, HK_ALT_R, MOD_NOREPEAT | MOD_ALT, 'R');
-		RegisterHotKey(hWnd, HK_ALT_A, MOD_NOREPEAT | MOD_ALT, 'A');
-		RegisterHotKey(hWnd, HK_ALT_K, MOD_NOREPEAT | MOD_ALT, 'K');
-
 		return 0;
 	case WM_SIZE:
 		MoveWindow(htab_main, 0, 0, LOWORD(lParam), HIWORD(lParam), true);
@@ -483,10 +526,23 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 		}
 		MoveWindow(hb_font, LOWORD(lParam) - 22, 2, 20, 20, true);
 		return 0;
-	case WM_HOTKEY:
+	case WM_COMMAND:
 		switch (wParam) {
 		default: return DefWindowProcW(hWnd, uMsg, wParam, lParam);
-		case HK_F2: {
+		case MAKEWPARAM(ID_B_FONT, BN_CLICKED): {
+			CHOOSEFONTW cf{
+				.lStructSize = sizeof(CHOOSEFONTW),
+				.hwndOwner = hWnd,
+				.lpLogFont = &logfont,
+				.Flags = CF_INITTOLOGFONTSTRUCT,
+			};
+			ChooseFontW(&cf);
+			DeleteObject(hfont);
+			hfont = CreateFontIndirectW(&logfont);
+			SendMessage(hedit_char, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
+			SendMessage(hedit_nonroman, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
+		} return 0;
+		case MAKEWPARAM(HK_F2, 1): {
 			HWND hedit = GetFocus();
 			if (hedit == hedit_char) {
 				SendMessageW(hedit_byte, EM_SETSEL, 0, -1);
@@ -504,71 +560,59 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 				SendMessageW(hedit_roman, EM_SETSEL, 0, -1);
 			}
 		} return 0;
-		case HK_F3: {
+		case MAKEWPARAM(HK_F3, 1): {
 			HWND hedit = GetFocus();
 			if (hedit == hedit_char) SetFocus(hedit_byte);
 			else if (hedit == hedit_byte) SetFocus(hedit_char);
 			else if (hedit == hedit_roman) SetFocus(hedit_nonroman);
 			else if (hedit == hedit_nonroman) SetFocus(hedit_roman);
 		} return 0;
-		case HK_CTRL_A: {
+		case MAKEWPARAM(HK_CTRL_A, 1): {
 			HWND hedit = GetFocus();
 			if (hedit == hedit_char
 				|| hedit == hedit_byte
 				|| hedit == hedit_roman) SendMessageW(hedit, EM_SETSEL, 0, -1);
 		} return 0;
-		case HK_ALT_X:
+		case MAKEWPARAM(HK_ALT_Z, 1):
+			SendMessageW(htab_main, TCM_SETCURSEL, 0, 0);
+			change_tab(0);
+			SetFocus(hedit_char);
+			return 0;
+		case MAKEWPARAM(HK_ALT_X, 1):
 			SendMessageW(htab_main, TCM_SETCURSEL, 0, 0);
 			change_tab(0);
 			SetFocus(hedit_byte);
 			return 0;
-		case HK_ALT_L:
+		case MAKEWPARAM(HK_ALT_L, 1):
 			change_script(0);
 			SendMessageW(hcbox_script, CB_SETCURSEL, 0, 0);
 			change_tab(1);
 			SetFocus(hedit_roman);
 			return 0;
-		case HK_ALT_G:
+		case MAKEWPARAM(HK_ALT_G, 1):
 			change_script(1);
 			SendMessageW(htab_main, TCM_SETCURSEL, 1, 0);
 			change_tab(1);
 			SetFocus(hedit_roman);
 			return 0;
-		case HK_ALT_R:
+		case MAKEWPARAM(HK_ALT_R, 1):
 			change_script(2);
 			SendMessageW(htab_main, TCM_SETCURSEL, 1, 0);
 			change_tab(1);
 			SetFocus(hedit_roman);
 			return 0;
-		case HK_ALT_A:
+		case MAKEWPARAM(HK_ALT_A, 1):
 			change_script(3);
 			SendMessageW(htab_main, TCM_SETCURSEL, 1, 0);
 			change_tab(1);
 			SetFocus(hedit_roman);
 			return 0;
-		case HK_ALT_K:
+		case MAKEWPARAM(HK_ALT_K, 1):
 			change_script(4);
 			SendMessageW(htab_main, TCM_SETCURSEL, 1, 0);
 			change_tab(1);
 			SetFocus(hedit_roman);
 			return 0;
-		}
-	case WM_COMMAND:
-		switch (wParam) {
-		default: return DefWindowProcW(hWnd, uMsg, wParam, lParam);
-		case MAKEWPARAM(ID_B_FONT, BN_CLICKED): {
-			CHOOSEFONTW cf{
-				.lStructSize = sizeof(CHOOSEFONTW),
-				.hwndOwner = hWnd,
-				.lpLogFont = &logfont,
-				.Flags = CF_INITTOLOGFONTSTRUCT,
-			};
-			ChooseFontW(&cf);
-			DeleteObject(hfont);
-			hfont = CreateFontIndirectW(&logfont);
-			SendMessage(hedit_char, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
-			SendMessage(hedit_nonroman, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
-		} return 0;
 		}
 	case WM_NOTIFY: {
 		NMHDR const&nm = *reinterpret_cast<NMHDR const*>(lParam);
@@ -593,6 +637,8 @@ int main(int, char**) {
 	hinstance = GetModuleHandleW(nullptr);
 	hfont = CreateFontIndirectW(&logfont);
 
+	HACCEL haccel = CreateAcceleratorTableW(accels, sizeof(accels) / sizeof(*accels));
+
 	{
 		WNDCLASSW const wclass_main{
 			.lpfnWndProc = wndproc_main,
@@ -615,9 +661,10 @@ int main(int, char**) {
 	}
 
 	for (MSG msg; GetMessageW(&msg, nullptr, 0, 0);) {
-		TranslateMessage(&msg);
+		TranslateAcceleratorW(hwnd_main, haccel, &msg) || TranslateMessage(&msg);
 		DispatchMessageW(&msg);
 	}
 
+	DestroyAcceleratorTable(haccel);
 	DeleteObject(hfont);
 }

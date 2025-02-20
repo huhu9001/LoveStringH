@@ -3,23 +3,21 @@
 #include"helper_func.hpp"
 #include<ctre.hpp>
 
-#include<sstream>
-
 std::unique_ptr<std::string> lovestringh::Transliterator::RegexItem::mreplace_s(
 	RegexItem const*r,
 	boost::cmatch const*m)
 {
-	std::ostringstream result;
-	auto i_last = r->s_replace.data();
-	auto const i_end = i_last + r->s_replace.length();
+	auto result = std::make_unique<std::string>();
+	char const*i_last = r->s_replace.data();
+	char const*const i_end = i_last + r->s_replace.length();
 	for (auto const&mg : ctre::split<"\\$(\\d+)">(i_last, i_end)) {
 		auto i = mg.data();
-		if (i_last < i) result << std::string_view(i_last, i);
-		result << to_view((*m)[mg.get<1>().to_number()]);
+		if (i_last < i) result->append(i_last, i);
+		result->append(to_view((*m)[mg.get<1>().to_number()]));
 		i_last = mg.end();
 	}
-	if (i_last < i_end) result << std::string_view(i_last, i_end);
-	return std::make_unique<std::string>(std::move(result).str());
+	if (i_last < i_end) result->append(i_last, i_end);
+	return result;
 }
 
 std::unique_ptr<std::string> lovestringh::Transliterator::RegexItem::mreplace_d(
@@ -27,8 +25,8 @@ std::unique_ptr<std::string> lovestringh::Transliterator::RegexItem::mreplace_d(
 	boost::cmatch const*m)
 {
 	auto s = to_view((*m)[0]);
-	if (r->d_replace.contains(s))
-		return std::make_unique<std::string>(std::string(r->d_replace.at(s)));
+	if (auto i = r->d_replace.find(s); i != r->d_replace.end())
+		return std::make_unique<std::string>(i->second);
 	else return nullptr;
 }
 

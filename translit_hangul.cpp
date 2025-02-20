@@ -12,10 +12,11 @@
 #define PAT_JAMO "n[ntsz]|l[xdzq]|lps|m[psz]|ps?[kt]|p[ct]h|s[kntp]|sch|ng[qsz]|fh|hh|[wfvzyq]|"
 
 lovestringh::Transliterator const*lovestringh::Transliterator::make_hangul() {
-	auto syllable = [](
+	auto syllable = +[](
 		RegexItem const*,
 		boost::cmatch const*m)->std::unique_ptr<std::string>
-	{auto&mm = (*m)[0]; auto&mm1 = (*m)[1]; auto&mm2 = (*m)[2]; auto&mm3 = (*m)[3];
+	{
+		auto&mm = (*m)[0]; auto&mm1 = (*m)[1]; auto&mm2 = (*m)[2]; auto&mm3 = (*m)[3];
 		static const std::map<std::string_view, int>dict_initial = {
 			{"g", 0},
 			{"kk", 1},
@@ -110,7 +111,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_hangul() {
 		return result;
 	};
 
-	auto syllable_archaic = [](
+	auto syllable_archaic = +[](
 		RegexItem const*,
 		boost::cmatch const*m)->std::unique_ptr<std::string>
 	{

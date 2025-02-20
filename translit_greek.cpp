@@ -4,7 +4,7 @@
 
 lovestringh::Transliterator const*lovestringh::Transliterator::make_greek() {
 	static Transliterator const t("Greek (Alt+G)", {
-		RegexItem("([AHIVahiyv]|[AHV][Jj]|[ahv]j)([()])~", [](
+		RegexItem("([AHIVahiyv]|[AHV][Jj]|[ahv]j)([()])~", +[](
 			RegexItem const*,
 			boost::cmatch const*m)
 		->std::unique_ptr<std::string> {
@@ -37,7 +37,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_greek() {
 			result->resize(u32u8(c, result->data()));
 			return result;
 		}),
-		RegexItem("([AEHIOVaehioyv]|[AHV][Jj]|[ahv]j)([()])([/\\\\]?)", [](
+		RegexItem("([AEHIOVaehioyv]|[AHV][Jj]|[ahv]j)([()])([/\\\\]?)", +[](
 			RegexItem const*,
 			boost::cmatch const*m)
 		->std::unique_ptr<std::string> {
