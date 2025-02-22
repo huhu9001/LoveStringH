@@ -90,17 +90,17 @@ static const std::map<std::string_view, int> dict_coda = {
 
 template<typename Match> bool syllable(Match const&m, std::string&out) {
 	uint32_t initial;
-	if (auto i = dict_initial.find(m.get<1>().to_view()); i != dict_initial.cend())
+	if (auto i = dict_initial.find(m.template get<1>().to_view()); i != dict_initial.cend())
 		initial = i->second;
 	else return false;
 
 	uint32_t median;
-	if (auto i = dict_median.find(m.get<2>().to_view()); i != dict_median.cend())
+	if (auto i = dict_median.find(m.template get<2>().to_view()); i != dict_median.cend())
 		median = i->second;
 	else return false;
 
 	uint32_t coda;
-	if (auto i = dict_coda.find(m.get<3>().to_view()); i != dict_coda.cend())
+	if (auto i = dict_coda.find(m.template get<3>().to_view()); i != dict_coda.cend())
 		coda = i->second;
 	else return false;
 
@@ -482,20 +482,20 @@ static const std::map<std::string_view, int> dict_coda_archaic = {
 template<typename Match> bool syllable_archaic(Match const&m, std::string&out) {
 	uint32_t result[4];
 
-	if (auto i = dict_initial_archaic.find(m.get<1>().to_view()); i != dict_initial_archaic.cend())
+	if (auto i = dict_initial_archaic.find(m.template get<1>().to_view()); i != dict_initial_archaic.cend())
 		result[0] = i->second;
 	else return false;
 
-	if (auto i = dict_median_archaic.find(m.get<2>().to_view()); i != dict_median_archaic.cend())
+	if (auto i = dict_median_archaic.find(m.template get<2>().to_view()); i != dict_median_archaic.cend())
 		result[1] = i->second;
 	else return false;
 
-	if (auto i = dict_coda_archaic.find(m.get<3>().to_view()); i != dict_coda_archaic.cend())
+	if (auto i = dict_coda_archaic.find(m.template get<3>().to_view()); i != dict_coda_archaic.cend())
 		result[2] = i->second;
 	else return false;
 
-	result[3] = m.get<4>().to_view() == "1" ? 0x302e :
-		m.get<4>().to_view() == "2" ? 0x302f : 0;
+	result[3] = m.template get<4>().to_view() == "1" ? 0x302e :
+		m.template get<4>().to_view() == "2" ? 0x302f : 0;
 
 	size_t len = out.length();
 	out.resize(len + 16);

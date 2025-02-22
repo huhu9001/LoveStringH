@@ -23,11 +23,11 @@ static const std::map<std::string_view, int> dict_tilde = {
 
 template<typename Match> bool tilde(Match const&m, std::string&out) {
 	uint32_t c;
-	if (auto i = dict_tilde.find(m.get<1>().to_view()); i != dict_tilde.cend())
+	if (auto i = dict_tilde.find(m.template get<1>().to_view()); i != dict_tilde.cend())
 		c = i->second;
 	else return false;
 
-	c += m.get<2>().to_view() == ")" ? 0 : 1;
+	c += m.template get<2>().to_view() == ")" ? 0 : 1;
 
 	auto const len = out.length();
 	out.resize(len + 4);
@@ -60,13 +60,13 @@ static const std::map<std::string_view, int> dict_acute = {
 
 template<typename Match> bool acute(Match const&m, std::string&out) {
 	uint32_t c;
-	if (auto i = dict_acute.find(m.get<1>().to_view()); i != dict_acute.cend())
+	if (auto i = dict_acute.find(m.template get<1>().to_view()); i != dict_acute.cend())
 		c = i->second;
 	else return false;
 
-	c += m.get<2>().to_view() == ")" ? 0 : 1;
+	c += m.template get<2>().to_view() == ")" ? 0 : 1;
 
-	c += m.get<3>().to_view() == "\\" ? 2 : m.get<3>().to_view() == "/" ? 4 : 0;
+	c += m.template get<3>().to_view() == "\\" ? 2 : m.template get<3>().to_view() == "/" ? 4 : 0;
 
 	auto const len = out.length();
 	out.resize(len + 4);

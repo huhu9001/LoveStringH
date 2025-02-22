@@ -20,7 +20,7 @@ template<typename TChar> struct Regexoid {
 			}
 
 			size_t read_write(std::basic_string_view<TChar>in, size_t pos, bool empty_before, std::basic_string<TChar>&out) const override {
-				auto const m = ctre::starts_with<pattern, Modifiers...>.exec_with_result_iterator<decltype(in.begin())>(in.begin(), in.begin() + pos, in.end());
+				auto const m = ctre::starts_with<pattern, Modifiers...>.template exec_with_result_iterator<decltype(in.begin())>(in.begin(), in.begin() + pos, in.end());
 				if (!m) return -1;
 				if (empty_before && m.size() == 0) return -1;
 				return output(m, out) ? m.size() : -1;
@@ -36,7 +36,7 @@ template<typename TChar> struct Regexoid {
 			RegexoidMap(std::map<std::basic_string_view<TChar>, std::basic_string_view<TChar>>const&dict) :dict(dict) {}
 
 			bool output(Match const&m, std::basic_string<TChar>&out) const {
-				std::basic_string_view<TChar>const key = m.get<(m.count() > 1 ? 1 : 0)>().to_view();
+				std::basic_string_view<TChar>const key = m.template get<(m.count() > 1 ? 1 : 0)>().to_view();
 				if (auto const entry = dict.find(key); entry != dict.end()) {
 					out.append(entry->second);
 					return true;
@@ -45,7 +45,7 @@ template<typename TChar> struct Regexoid {
 			}
 
 			size_t read_write(std::basic_string_view<TChar>in, size_t pos, bool empty_before, std::basic_string<TChar>&out) const override {
-				auto const m = ctre::starts_with<pattern, Modifiers...>.exec_with_result_iterator<decltype(in.begin())>(in.begin(), in.begin() + pos, in.end());
+				auto const m = ctre::starts_with<pattern, Modifiers...>.template exec_with_result_iterator<decltype(in.begin())>(in.begin(), in.begin() + pos, in.end());
 				if (!m) return -1;
 				if (empty_before && m.size() == 0) return -1;
 				return output(m, out) ? m.size() : -1;
@@ -78,7 +78,7 @@ template<typename TChar> struct Regexoid {
 			}
 
 			size_t read_write(std::basic_string_view<TChar>in, size_t pos, bool empty_before, std::basic_string<TChar>&out) const override {
-				auto const m = ctre::starts_with<pattern, Modifiers...>.exec_with_result_iterator<decltype(in.begin())>(in.begin(), in.begin() + pos, in.end());
+				auto const m = ctre::starts_with<pattern, Modifiers...>.template exec_with_result_iterator<decltype(in.begin())>(in.begin(), in.begin() + pos, in.end());
 				if (!m) return -1;
 				if (empty_before && m.size() == 0) return -1;
 				return output(m, out) ? m.size() : -1;
