@@ -1,8 +1,10 @@
-#include"../encoder.hpp"
-#include"../translit.hpp"
+#include"../encoder_ex.hpp"
+#include"../translit_ex.hpp"
 
 #include<Windows.h>
 #include<CommCtrl.h>
+
+#include<algorithm>
 
 static wchar_t const*const ERR_TOO_LONG = L"<Input string is too long.>";
 
@@ -49,7 +51,7 @@ static size_t sel_script;
 
 static constexpr int HK_F2 = 500;
 static constexpr int HK_F3 = 501;
-static constexpr int HK_CTRL_A = 502;;
+static constexpr int HK_CTRL_A = 502;
 static constexpr int HK_ALT_Z = 503;
 static constexpr int HK_ALT_X = 504;
 static constexpr int HK_ALT_L = 505;
@@ -126,7 +128,7 @@ static void encode() {
 
 		auto&e = lovestringh::all_encoders[sel_encoding];
 		auto es =
-			e.styles[SendMessageW(hcbox_escape[sel_encoding], CB_GETCURSEL, 0, 0)]->escape;
+			e.styles[SendMessageW(hcbox_escape[sel_encoding], CB_GETCURSEL, 0, 0)].escape;
 		auto out = e.encode(in_v, ne_v, es);
 		SetWindowTextW(hedit_byte, reinterpret_cast<LPCWSTR>(out.c_str()));
 	}
@@ -213,36 +215,43 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 		for (int i = 0; i < NUM_ENCODERS; ++i) {
 			auto const&e = lovestringh::all_encoders[i];
-			char const*start = e.name.c_str();
-			char const*end = start + e.name.length() + 1;
-			std::copy(start, end, buff_in);
-			SendMessageW(
-				hcbox_encoding,
-				CB_ADDSTRING,
-				0,
-				reinterpret_cast<LPARAM>(buff_in));
-
-			hcbox_escape[i] = CreateWindowW(
-				L"COMBOBOX",
-				nullptr,
-				CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED,
-				0, 0,
-				0, 0,
-				hWnd,
-				reinterpret_cast<HMENU>(ID_CBOX_ESCAPE_FIRST + i),
-				hinstance,
-				nullptr);
-			for (auto const&ec : e.styles) {
-				char const*start = ec->name.c_str();
-				char const*end = start + ec->name.length() + 1;
+			if (e.has_charset()) {
+				size_t len = e.name.length();
+				char const*start = e.name.data();
+				char const*end = start + len;
 				std::copy(start, end, buff_in);
+				buff_in[len] = 0;
 				SendMessageW(
-					hcbox_escape[i],
+					hcbox_encoding,
 					CB_ADDSTRING,
 					0,
 					reinterpret_cast<LPARAM>(buff_in));
+
+				hcbox_escape[i] = CreateWindowW(
+					L"COMBOBOX",
+					nullptr,
+					CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED,
+					0, 0,
+					0, 0,
+					hWnd,
+					reinterpret_cast<HMENU>(ID_CBOX_ESCAPE_FIRST + i),
+					hinstance,
+					nullptr);
+				for (auto const&ec : e.styles) {
+					size_t len = ec.name.length();
+					char const*start = ec.name.data();
+					char const*end = start + len;
+					std::copy(start, end, buff_in);
+					buff_in[len] = 0;
+					SendMessageW(
+						hcbox_escape[i],
+						CB_ADDSTRING,
+						0,
+						reinterpret_cast<LPARAM>(buff_in));
+				}
+				SendMessageW(hcbox_escape[i], CB_SETCURSEL, 0, 0);
 			}
-			SendMessageW(hcbox_escape[i], CB_SETCURSEL, 0, 0);
+			else hcbox_escape[i] = nullptr;
 		}
 		SendMessageW(hcbox_encoding, CB_SETCURSEL, 0, 0);
 		sel_encoding = 0;
@@ -316,11 +325,15 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			encode();
 			return 0;
 		case MAKEWPARAM(ID_CBOX_ENCODING, CBN_SELCHANGE): {
-			size_t sel = SendMessageW(hcbox_encoding, CB_GETCURSEL, 0, 0);
-			if (sel != sel_encoding) {
+			size_t const sel = SendMessageW(hcbox_encoding, CB_GETCURSEL, 0, 0);
+			size_t const sel_real =
+				sel - std::count_if(hcbox_escape, hcbox_escape + sel, +[](HWND h) {
+					return h == 0;
+				});
+			if (sel_real != sel_encoding) {
 				ShowWindow(hcbox_escape[sel_encoding], SW_HIDE);
-				ShowWindow(hcbox_escape[sel], SW_SHOW);
-				sel_encoding = sel;
+				ShowWindow(hcbox_escape[sel_real], SW_SHOW);
+				sel_encoding = sel_real;
 			}
 			if (SendMessageW(hb_reencode, BM_GETCHECK, 0, 0)) encode();
 			else decode();
@@ -365,10 +378,12 @@ static LRESULT CALLBACK wndproc_translit(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			reinterpret_cast<HMENU>(ID_CBOX_SCRIPT),
 			hinstance,
 			nullptr);
-		for (auto t : lovestringh::Transliterator::all) {
-			char const*start = t->name.c_str();
-			char const*end = start + t->name.length() + 1;
+		for (auto&t : lovestringh::all_translits) {
+			size_t const len = t.name.length();
+			char const*start = t.name.data();
+			char const*end = start + len;
 			std::copy(start, end, buff_in);
+			buff_in[len] = 0;
 			SendMessageW(
 				hcbox_script,
 				CB_ADDSTRING,
@@ -403,14 +418,14 @@ static LRESULT CALLBACK wndproc_translit(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		case MAKEWPARAM(ID_EDIT_ROMAN, EN_UPDATE):
 			if (GetWindowTextLengthW(hedit_roman) < 0x10000 - 1) {
 				GetWindowTextW(hedit_roman, buff_in, 0x10000);
-				int len = WideCharToMultiByte(
+				int const len = WideCharToMultiByte(
 					CP_UTF8, 0, buff_in, -1, nullptr, 0, nullptr, nullptr);
 				std::string in;
 				in.resize(len);
 				WideCharToMultiByte(
 					CP_UTF8, 0, buff_in, -1, in.data(), len, nullptr, nullptr);
-				auto out = lovestringh::Transliterator::all[sel_script]->translit(in);
-				int len2 = MultiByteToWideChar(CP_UTF8, 0, out.c_str(), -1, nullptr, 0);
+				auto const out = lovestringh::all_translits[sel_script].translit(in);
+				int const len2 = MultiByteToWideChar(CP_UTF8, 0, out.c_str(), -1, nullptr, 0);
 				if (len2 <= 0x10000) {
 					MultiByteToWideChar(CP_UTF8, 0, out.c_str(), -1, buff_in, len2);
 					SetWindowTextW(hedit_nonroman, buff_in);
@@ -536,11 +551,12 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 				.lpLogFont = &logfont,
 				.Flags = CF_INITTOLOGFONTSTRUCT,
 			};
-			ChooseFontW(&cf);
-			DeleteObject(hfont);
-			hfont = CreateFontIndirectW(&logfont);
-			SendMessage(hedit_char, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
-			SendMessage(hedit_nonroman, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
+			if (ChooseFontW(&cf)) {
+				DeleteObject(hfont);
+				hfont = CreateFontIndirectW(&logfont);
+				SendMessage(hedit_char, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
+				SendMessage(hedit_nonroman, WM_SETFONT, reinterpret_cast<WPARAM>(hfont), true);
+			}
 		} return 0;
 		case MAKEWPARAM(HK_F2, 1): {
 			HWND hedit = GetFocus();

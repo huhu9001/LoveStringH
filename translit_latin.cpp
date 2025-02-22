@@ -1,8 +1,8 @@
 #include"translit.hpp"
 
-lovestringh::Transliterator const*lovestringh::Transliterator::make_latin() {
-	static Transliterator const t("Latin (Alt+L)", {
-		RegexItem("...", {
+namespace lovestringh {
+	Transliterator make_latin() {
+		static std::map<std::string_view, std::string_view>const dict_3{
 			{ "A:-", "\u01DE" }, { "a:-", "\u01DF" },
 			{ "AE-", "\u01E2" }, { "Ae-", "\u01E2" }, { "ae-", "\u01E3" },
 			{ "O:-", "\u022A" }, { "o:-", "\u022B" },
@@ -16,8 +16,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_latin() {
 			{ "U:&", "\u01D9" }, { "u:&", "\u01DA" },
 
 			{ "U:\\", "\u01DB" }, { "u:\\", "\u01DC" },
-		}),
-		RegexItem("..", {
+		}, dict_2{
 			{ "AE", "\u00C6" }, { "Ae", "\u00C6" }, { "ae", "\u00E6" },
 			{ "CZ", "\u00C7" }, { "Cz", "\u00C7" }, { "cz", "\u00E7" },
 			{ "OE", "\u0152" }, { "Oe", "\u0152" }, { "oe", "\u0153" },
@@ -90,15 +89,19 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_latin() {
 			{ "O^", "\u00D4" }, { "o^", "\u00F4" },
 			{ "U^", "\u00DB" }, { "u^", "\u00FB" },
 			{ "Y^", "\u0176" }, { "y^", "\u0177" },
-		}),
-		RegexItem(".", {
+		}, dict_1{
 			{ ":", "\u0308" },//Diaeresis
 			{ "-", "\u0304" },//Macron
 			{ "/", "\u0301" },//Acute
 			{ "&", "\u030C" },//Caron
 			{ "\\", "\u0300" },//Grave
 			{ "^", "\u0302" },//Circumflex
-		}),
-	});
-	return &t;
+		};
+		static std::unique_ptr<Regexoid<char> const> const items[] = {
+			Regexoid<char>::Maker<"...">::make(dict_3),
+			Regexoid<char>::Maker<"..">::make(dict_2),
+			Regexoid<char>::Maker<".">::make(dict_1),
+		};
+		return Transliterator("Latin (Alt+L)", items);
+	}
 }

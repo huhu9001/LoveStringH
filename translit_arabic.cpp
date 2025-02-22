@@ -1,14 +1,12 @@
 #include"translit.hpp"
 
-lovestringh::Transliterator const*lovestringh::Transliterator::make_arabic() {
-	static Transliterator const t("Arabic (Alt+A)", {
-		RegexItem("([aiu])(?=[A-Za-z])", {
+namespace lovestringh {
+	Transliterator make_arabic() {
+		static std::map<std::string_view, std::string_view> const dict_initial{
 			{ "a", "\u0627" },
 			{ "i", "\u0625" },
 			{ "u", "\u0624" },
-		}, "[A-Za-z]", 1, false),
-		RegexItem("-(?=[A-Za-z])", "", "[A-Za-z]", 1, true),
-		RegexItem("..", {
+		}, dict_2{
 			{ "aa", "\u0627" },
 			{ "th", "\u062B" },
 			{ "kh", "\u062E" },
@@ -29,8 +27,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_arabic() {
 			{ "t~", "\u0629" },
 			{ "i~", "\u0649" },
 			{ "a'", "\u0671" },
-		}),
-		RegexItem(".", {
+		}, dict_1{
 			{ "b", "\u0628" },
 			{ "t", "\u062A" },
 			{ "j", "\u062C" },
@@ -58,7 +55,14 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_arabic() {
 
 			{ "'", "\u0621" },
 			{ "-", "\u0640" },
-		}),
-	});
-	return &t;
+		};
+
+		static std::unique_ptr<Regexoid<char> const> const items[] = {
+			Regexoid<char>::Maker<"(?<![A-Za-z])([aiu])(?=[A-Za-z])">::make(dict_initial),
+			Regexoid<char>::Maker<"(?<=[A-Za-z])-(?=[A-Za-z])">::make(""),
+			Regexoid<char>::Maker<"..">::make(dict_2),
+			Regexoid<char>::Maker<".">::make(dict_1),
+		};
+		return Transliterator("Arabic (Alt+A)", items);
+	}
 }

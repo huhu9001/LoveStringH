@@ -71,8 +71,7 @@ template<typename TChar> struct Pseudoregex {
 	}
 };
 
-template<typename TChar>
-void append_escape(
+template<typename TChar> void append_escape(
 	std::basic_string<TChar>&result,
 	std::string(*escape)(uint32_t),
 	uint32_t cp)

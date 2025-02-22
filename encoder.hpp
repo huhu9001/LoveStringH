@@ -11,35 +11,35 @@
 namespace lovestringh {
 	struct Encoder {
 		struct EscapeStyle {
-			std::string const name;
+			std::string_view const name;
 			std::string(*const escape)(uint32_t);
-		};
-
-		inline static EscapeStyle const estyle_x{
-			.name = "\\x",
-				.escape = [](uint32_t u) {
+			
+			static std::string estyle_x(uint32_t u) {
 				return std::format("\\x{:X}", u);
-			},
-		};
-		inline static EscapeStyle const estyle_per{
-			.name = "%",
-			.escape = [](uint32_t u) {
+			}
+
+			static std::string estyle_per(uint32_t u) {
 				return std::format("%{:02X}", u);
-			},
-		};
-		inline static EscapeStyle const estyle_u{
-			.name = "\\u",
-			.escape = [](uint32_t u) {
+			}
+
+			static std::string estyle_u(uint32_t u) {
 				return u < 0x80 ? std::format("\\x{:X}", u) :
 					u < 0x10000 ? std::format("\\u{:04X}", u) :
 					std::format("\\U{:08X}", u);
-			},
-		};
-		inline static EscapeStyle const estyle_html{
-			.name = "&#x",
-			.escape = [](uint32_t u) {
+			}
+
+			static std::string estyle_html(uint32_t u) {
 				return std::format("&#x{:X};", u);
-			},
+			}
+		};
+
+		inline static constexpr EscapeStyle styles_u32[] = {
+			{ .name = "\\u", .escape = EscapeStyle::estyle_u },
+			{ .name = "&#x", .escape = EscapeStyle::estyle_html },
+		};
+		inline static constexpr EscapeStyle styles_default[] = {
+			{ .name = "\\x", .escape = EscapeStyle::estyle_x },
+			{ .name = "%", .escape = EscapeStyle::estyle_per },
 		};
 
 		static constexpr char const*NAME_UTF32 = "UTF-32";
@@ -52,17 +52,15 @@ namespace lovestringh {
 		static constexpr char const*NAME_EUC_JP = "EUC-JP";
 		static constexpr char const*NAME_EUC_KR = "EUC-KR";
 
-		std::string const name;
-		bool const supported;
-		std::vector<EscapeStyle const*>const styles;
+		std::string_view const name;
+		std::span<EscapeStyle const>const styles;
 
-		Encoder(
-			char const*name,
-			std::vector<EscapeStyle const*>&&styles,
-			bool force_support = false)
-			:name(name),
-			supported(force_support || has_charset(name)),
-			styles(std::move(styles)) {}
+		constexpr Encoder(std::string_view name, std::span<EscapeStyle const> styles)
+			:name(name), styles(styles) {}
+		Encoder(Encoder const&) = delete;
+		Encoder(Encoder&&) = delete;
+
+		bool has_charset() const;
 
 		std::u8string encode(
 			std::u8string_view s,
@@ -80,31 +78,11 @@ namespace lovestringh {
 		void decode_piece(std::vector<char>&bs, std::u8string&s_out) const;
 		void decode_piece(std::vector<char>&bs, std::u16string&s_out) const;
 
-		static bool has_charset(std::string_view name);
-
 		static std::vector<char>to_charset(std::string_view name, std::u8string_view s);
 		static std::vector<char>to_charset(std::string_view name, std::u16string_view s);
 
-		static void from_charset(
-			std::string_view name,
-			std::span<char> bs,
-			std::u8string&s_out);
-		static void from_charset(
-			std::string_view name,
-			std::span<char> bs,
-			std::u16string&s_out);
-	};
-
-	inline Encoder const all_encoders[] = {
-		Encoder(Encoder::NAME_UTF32, { &Encoder::estyle_u, &Encoder::estyle_html }, true),
-		Encoder(Encoder::NAME_UTF8, { &Encoder::estyle_x, &Encoder::estyle_per }, true),
-		Encoder(Encoder::NAME_UTF16, { &Encoder::estyle_x }, true),
-		Encoder(Encoder::NAME_GB18030, { &Encoder::estyle_x, &Encoder::estyle_per }),
-		Encoder(Encoder::NAME_GB2312, { &Encoder::estyle_x, &Encoder::estyle_per }),
-		Encoder(Encoder::NAME_Shift_JIS, { &Encoder::estyle_x, &Encoder::estyle_per }),
-		Encoder(Encoder::NAME_Big5, { &Encoder::estyle_x, &Encoder::estyle_per }),
-		Encoder(Encoder::NAME_EUC_JP, { &Encoder::estyle_x, &Encoder::estyle_per }),
-		Encoder(Encoder::NAME_EUC_KR, { &Encoder::estyle_x, &Encoder::estyle_per }),
+		static void from_charset(std::string_view name, std::span<char>bs, std::u8string&s_out);
+		static void from_charset(std::string_view name, std::span<char>bs, std::u16string&s_out);
 	};
 }
 

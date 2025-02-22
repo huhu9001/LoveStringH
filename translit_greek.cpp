@@ -2,89 +2,86 @@
 
 #include"helper_func.hpp"
 
-lovestringh::Transliterator const*lovestringh::Transliterator::make_greek() {
-	static Transliterator const t("Greek (Alt+G)", {
-		RegexItem("([AHIVahiyv]|[AHV][Jj]|[ahv]j)([()])~", +[](
-			RegexItem const*,
-			boost::cmatch const*m)
-		->std::unique_ptr<std::string> {
-			static const std::map<std::string_view, int>dict = {
-                {"a", 0x1F06},
-				{"A", 0x1F0E},
-				{"h", 0x1F26},
-				{"H", 0x1F2E},
-				{"i", 0x1F36},
-				{"I", 0x1F3E},
-				{"y", 0x1F56},
-				{"v", 0x1F66},
-				{"V", 0x1F6E},
+static const std::map<std::string_view, int> dict_tilde = {
+    {"a", 0x1F06},
+	{"A", 0x1F0E},
+	{"h", 0x1F26},
+	{"H", 0x1F2E},
+	{"i", 0x1F36},
+	{"I", 0x1F3E},
+	{"y", 0x1F56},
+	{"v", 0x1F66},
+	{"V", 0x1F6E},
 
-				{"aj", 0x1F86},
-				{"AJ", 0x1F8E}, {"Aj", 0x1F8E},
-				{"hj", 0x1F96},
-				{"HJ", 0x1F9E}, {"Hj", 0x1F9E},
-				{"vj", 0x1FA6},
-				{"VJ", 0x1FAE}, {"Vj", 0x1FAE},
-			};
-			uint32_t c;
-			if (auto i = dict.find(to_view((*m)[1])); i != dict.cend())
-				c = i->second;
-			else return nullptr;
+	{"aj", 0x1F86},
+	{"AJ", 0x1F8E}, {"Aj", 0x1F8E},
+	{"hj", 0x1F96},
+	{"HJ", 0x1F9E}, {"Hj", 0x1F9E},
+	{"vj", 0x1FA6},
+	{"VJ", 0x1FAE}, {"Vj", 0x1FAE},
+};
 
-			c += to_view((*m)[2]) == ")" ? 0 : 1;
+template<typename Match> bool tilde(Match const&m, std::string&out) {
+	uint32_t c;
+	if (auto i = dict_tilde.find(m.get<1>().to_view()); i != dict_tilde.cend())
+		c = i->second;
+	else return false;
 
-			auto result = std::make_unique<std::string>("\0\0\0\0", 4);
-			result->resize(u32u8(c, result->data()));
-			return result;
-		}),
-		RegexItem("([AEHIOVaehioyv]|[AHV][Jj]|[ahv]j)([()])([/\\\\]?)", +[](
-			RegexItem const*,
-			boost::cmatch const*m)
-		->std::unique_ptr<std::string> {
-			static const std::map<std::string_view, int>dict = {
-                {"a", 0x1F00},
-				{"A", 0x1F08},
-				{"e", 0x1F10},
-				{"E", 0x1F18},
-				{"h", 0x1F20},
-				{"H", 0x1F28},
-				{"i", 0x1F30},
-				{"I", 0x1F38},
-				{"o", 0x1F40},
-				{"O", 0x1F48},
-				{"y", 0x1F50},
-				{"v", 0x1F60},
-				{"V", 0x1F68},
+	c += m.get<2>().to_view() == ")" ? 0 : 1;
 
-				{"aj", 0x1F80},
-				{"AJ", 0x1F88}, {"Aj", 0x1F88},
-				{"hj", 0x1F90},
-				{"HJ", 0x1F98}, {"Hj", 0x1F98},
-				{"vj", 0x1FA0},
-				{"VJ", 0x1FA8}, {"Vj", 0x1FA8},
-			};
-			uint32_t c;
-			if (auto i = dict.find(to_view((*m)[1])); i != dict.cend())
-				c = i->second;
-			else return nullptr;
+	auto const len = out.length();
+	out.resize(len + 4);
+	out.resize(len + u32u8(c, out.data() + len));
+	return true;
+}
 
-			c += to_view((*m)[2]) == ")" ? 0 : 1;
+static const std::map<std::string_view, int> dict_acute = {
+    {"a", 0x1F00},
+	{"A", 0x1F08},
+	{"e", 0x1F10},
+	{"E", 0x1F18},
+	{"h", 0x1F20},
+	{"H", 0x1F28},
+	{"i", 0x1F30},
+	{"I", 0x1F38},
+	{"o", 0x1F40},
+	{"O", 0x1F48},
+	{"y", 0x1F50},
+	{"v", 0x1F60},
+	{"V", 0x1F68},
 
-			c += to_view((*m)[3]) == "\\" ? 2 : to_view((*m)[3]) == "/" ? 4 : 0;
+	{"aj", 0x1F80},
+	{"AJ", 0x1F88}, {"Aj", 0x1F88},
+	{"hj", 0x1F90},
+	{"HJ", 0x1F98}, {"Hj", 0x1F98},
+	{"vj", 0x1FA0},
+	{"VJ", 0x1FA8}, {"Vj", 0x1FA8},
+};
 
-			auto result = std::make_unique<std::string>("\0\0\0\0", 4);
-			result->resize(u32u8(c, result->data()));
-			return result;
-		}),
-		RegexItem("Y\\(([/\\\\~]?)", {
+template<typename Match> bool acute(Match const&m, std::string&out) {
+	uint32_t c;
+	if (auto i = dict_acute.find(m.get<1>().to_view()); i != dict_acute.cend())
+		c = i->second;
+	else return false;
+
+	c += m.get<2>().to_view() == ")" ? 0 : 1;
+
+	c += m.get<3>().to_view() == "\\" ? 2 : m.get<3>().to_view() == "/" ? 4 : 0;
+
+	auto const len = out.length();
+	out.resize(len + 4);
+	out.resize(len + u32u8(c, out.data() + len));
+	return true;
+}
+
+namespace lovestringh {
+	Transliterator make_greek() {
+		static std::map<std::string_view, std::string_view> const dict_y{
 			{"Y(", "\u1F59"},
 			{"Y(\\", "\u1F5B"},
 			{"Y(/", "\u1F5D"},
 			{"Y(~", "\u1F5F"},
-		}),
-		RegexItem("s(?=[^A-Za-z]|$)", "\u03C2", "[A-Za-z][()~/\\\\][()~/\\\\]", 3, true),
-		RegexItem("s(?=[^A-Za-z]|$)", "\u03C2", "[A-Za-z][()~/\\\\]", 2, true),
-		RegexItem("...", {
+		}, dict_3{
 			{ "I:/", "\u0390" }, { "i:/", "\u0390" },
 			{ "Y:/", "\u03B0" }, { "y:/", "\u03B0" },
 			{ "aj/", "\u1FB4" },
@@ -102,8 +99,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_greek() {
 			{ "aj~", "\u1FB7" },
 			{ "hj~", "\u1FC7" },
 			{ "vj~", "\u1FF7" },
-		}),
-		RegexItem("..'?", {
+		}, dict_2{
 			{ "TH", "\u0398" }, { "Th", "\u0398" }, { "th", "\u03B8" },
 			{ "T'", "\u03A4" }, { "t'", "\u03C4" },
 			{ "PH", "\u03A6" }, { "Ph", "\u03A6" }, { "ph", "\u03C6" },
@@ -142,8 +138,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_greek() {
 
 			{ "R)", "\u1FE4" }, { "r)", "\u1FE4" },
 			{ "R(", "\u1FEC" }, { "r(", "\u1FE5" },
-		}),
-		RegexItem(".'?", {
+		}, dict_1{
 			{ "A", "\u0391" }, { "a", "\u03B1" },
 			{ "B", "\u0392" }, { "b", "\u03B2" },
 			{ "G", "\u0393" }, { "g", "\u03B3" },
@@ -166,7 +161,17 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_greek() {
 			{ "V", "\u03A9" }, { "v", "\u03C9" },
 			{ "Q", "\u03D8" }, { "q", "\u03D9" },
 			{ "W", "\u03DC" }, { "w", "\u03DD" },
-		}),
-	});
-	return &t;
+		};
+		static std::unique_ptr<Regexoid<char> const> const items[] = {
+			Regexoid<char>::Maker<"([AHIVahiyv]|[AHV][Jj]|[ahv]j)([()])~">::make(tilde),
+			Regexoid<char>::Maker<"([AEHIOVaehioyv]|[AHV][Jj]|[ahv]j)([()])([/\\\\]?)">::make(acute),
+			Regexoid<char>::Maker<"Y\\(([/\\\\~]?)">::make(dict_y),
+			Regexoid<char>::Maker<"(?<=[A-Za-z][()~/\\\\][()~/\\\\])s(?=[^A-Za-z]|$)">::make("\u03C2"),
+			Regexoid<char>::Maker<"(?<=[A-Za-z][()~/\\\\])s(?=[^A-Za-z]|$)">::make("\u03C2"),
+			Regexoid<char>::Maker<"...">::make(dict_3),
+			Regexoid<char>::Maker<"..'?">::make(dict_2),
+			Regexoid<char>::Maker<".'?">::make(dict_1),
+		};
+		return Transliterator("Greek (Alt+G)", items);
+	}
 }

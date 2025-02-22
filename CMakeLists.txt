@@ -14,17 +14,17 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 find_path(DIRINCLUDE_BOOST_REGEX boost/regex.hpp)
 if (DIRINCLUDE_BOOST_REGEX STREQUAL DIRINCLUDE_BOOST_REGEX-NOTFOUND)
-    message(SEND_ERROR "DIRINCLUDE_BOOST_REGEX: boost/regex header not found.")
+	message(SEND_ERROR "DIRINCLUDE_BOOST_REGEX: boost/regex header not found.")
 	message("=>https://github.com/boostorg/regex")
 endif()
 find_path(DIRINCLUDE_CTRE ctre.hpp)
 if (DIRINCLUDE_CTRE STREQUAL DIRINCLUDE_CTRE-NOTFOUND)
-    message(SEND_ERROR "DIRINCLUDE_CTRE: ctre header not found.")
+	message(SEND_ERROR "DIRINCLUDE_CTRE: ctre header not found.")
 	message("=>https://github.com/hanickadot/compile-time-regular-expressions")
 endif()
 find_path(DIRLIB_WIN32 User32.Lib)
 if (DIRLIB_WIN32 STREQUAL DIRLIB_WIN32-NOTFOUND)
-    message(SEND_ERROR "DIRLIB_WIN32: win32 lib not found.")
+	message(SEND_ERROR "DIRLIB_WIN32: win32 lib not found.")
 	message("=>Windows Kit")
 endif()
 
@@ -36,7 +36,6 @@ link_libraries(Comctl32)
 
 add_executable(LoveStringH
 	encoder.cpp
-	translit.cpp
 	translit_latin.cpp
 	translit_greek.cpp
 	translit_cyrillic.cpp

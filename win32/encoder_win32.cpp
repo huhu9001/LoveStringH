@@ -17,16 +17,11 @@ static std::map<std::string_view, UINT>const dict_codepage = {
 	{ lovestringh::Encoder::NAME_Shift_JIS, 932 },
 };
 
-bool lovestringh::Encoder::has_charset(std::string_view name) {
-	static std::map<std::string_view, UINT>const dict_codepage = {
-		{ lovestringh::Encoder::NAME_Big5, 950 },
-		{ lovestringh::Encoder::NAME_EUC_JP, 20932 },
-		{ lovestringh::Encoder::NAME_EUC_KR, 51949 },
-		{ lovestringh::Encoder::NAME_GB18030, 54936 },
-		{ lovestringh::Encoder::NAME_GB2312, 936 },
-		{ lovestringh::Encoder::NAME_Shift_JIS, 932 },
-	}; //for SIOF
-	return MultiByteToWideChar(dict_codepage.at(name), 0, "", 1, nullptr, 0) > 0;
+bool lovestringh::Encoder::has_charset() const {
+	if (auto i = dict_codepage.find(name); i != dict_codepage.end()) {
+		return IsValidCodePage(i->second);
+	}
+	else return true;
 }
 
 std::vector<char>lovestringh::Encoder::to_charset(

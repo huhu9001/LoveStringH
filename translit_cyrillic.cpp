@@ -1,11 +1,10 @@
 #include"translit.hpp"
 
-lovestringh::Transliterator const*lovestringh::Transliterator::make_cyrillic() {
-	static Transliterator const t("Cyrillic (Alt+R)", {
-		RegexItem("....", {
+namespace lovestringh {
+	Transliterator make_cyrillic() {
+		static std::map<std::string_view, std::string_view> const dict_4{
 			{ "SHCH", "\u0429" }, { "Shch", "\u0429" }, { "shch", "\u0449" },
-		}),
-		RegexItem("..", {
+		}, dict_2{
 			{ "YE", "\u0415" }, { "Ye", "\u0415" }, { "ye", "\u0435" },
 			{ "ZH", "\u0416" }, { "Zh", "\u0416" }, { "zh", "\u0436" },
 			{ "KH", "\u0425" }, { "Kh", "\u0425" }, { "kh", "\u0445" },
@@ -16,8 +15,7 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_cyrillic() {
 			{ "YU", "\u042E" }, { "Yu", "\u042E" }, { "yu", "\u044E" },
 			{ "YA", "\u042F" }, { "Ya", "\u042F" }, { "ya", "\u044F" },
 			{ "YO", "\u0401" }, { "Yo", "\u0401" }, { "yo", "\u0451" },
-		}),
-		RegexItem(".", {
+		}, dict_1{
 			{ "A", "\u0410" }, { "a", "\u0430" },
 			{ "B", "\u0411" }, { "b", "\u0431" },
 			{ "V", "\u0412" }, { "v", "\u0432" },
@@ -46,7 +44,12 @@ lovestringh::Transliterator const*lovestringh::Transliterator::make_cyrillic() {
 			{ "E", "\u042D" }, { "e", "\u044D" },
 
 			{ "/", "\u0301" },
-		}),
-	});
-	return &t;
+		};
+		static std::unique_ptr<Regexoid<char> const> const items[] = {
+			Regexoid<char>::Maker<"....">::make(dict_4),
+			Regexoid<char>::Maker<"..">::make(dict_2),
+			Regexoid<char>::Maker<".">::make(dict_1),
+		};
+		return Transliterator("Cyrillic (Alt+R)", items);
+	}
 }
