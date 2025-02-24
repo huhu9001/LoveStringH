@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.huhu9001.lovestringh.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_translit"
+        android:name="com.huhu9001.lovestringh.ui.translit.TranslitFragment"
+        android:label="@string/title_translit"
+        tools:layout="@layout/fragment_translit" />
+
+    <fragment
+        android:id="@+id/navigation_regex"
+        android:name="com.huhu9001.lovestringh.ui.regex.RegexFragment"
+        android:label="@string/title_regex"
+        tools:layout="@layout/fragment_regex" />
+</navigation>

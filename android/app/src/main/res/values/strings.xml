@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">LoveStringH</string>
+    <string name="title_home">Codepoint and charset</string>
+    <string name="title_translit">Transliteration</string>
+    <string name="title_regex">Regular expression</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_translit">Trans</string>
+    <string name="nav_regex">Regex</string>
+    <string name="hint_edittext_char">Characters</string>
+    <string name="hint_edittext_byte">Bytes</string>
+    <string name="hint_edittext_input">Input</string>
+    <string name="hint_edittext_output">Output</string>
+    <string name="hint_edittext_regex_target">Text</string>
+    <string name="hint_edittext_regex">Regex</string>
+    <string name="hint_edittext_replace">Replacement</string>
+    <string name="text_checkbox_changebytes">Change bytes when switching encodings</string>
+    <string name="text_textview_donotencode">Do not encode [^</string>
+    <string name="text_textview_donotencodeend">]</string>
+    <string name="text_button_copy">Copy</string>
+    <string name="text_button_copy_char">Copy chars</string>
+    <string name="text_button_copy_byte">Copy bytes</string>
+    <string name="text_button_clear">Clear</string>
+    <string name="text_button_findnext">Find next</string>
+    <string name="text_button_replace">Replace</string>
+    <string name="text_button_replaceall">Replace all</string>
+    <string name="toast_output_copied">Output copied.</string>
+    <string name="toast_invalid_regex">Invalid regex.</string>
+    <string name="toast_regex_notfound">This regular expression found no match.</string>
+    <string name="toast_regex_over">End of text reached. Searching from the beginning.</string>
+    <string name="toast_regex_replaceall">Replaced %1$d matches.</string>
+</resources>

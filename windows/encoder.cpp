@@ -85,7 +85,7 @@ template<typename TChar> void append_escape(
 		for (unsigned char c : escape(cp))
 			result.push_back(static_cast<TChar>(c));
 	}
-};
+}
 
 std::u8string lovestringh::Encoder::encode(
 	std::u8string_view s,
@@ -144,7 +144,7 @@ std::u16string lovestringh::Encoder::encode(
 				append_escape(result, escape, *c);
 		}
 		else if (name == NAME_UTF32) {
-			wchar_t surrogate = 0;
+            char16_t surrogate = 0;
 			for (char16_t const*c = csubbegin; c < csubend; ++c) {
 				if (surrogate != 0) {
 					if (*c >= 0xDC00U && *c < 0xE000U) {
@@ -325,11 +325,11 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 			if (c_whole < 0x110000) {
 				if (c_whole >= 0x10000 && c_whole < 0x110000) {
 					result.append({
-						static_cast<wchar_t>(u16sur1(c_whole)),
-						static_cast<wchar_t>(u16sur2(c_whole)),
+						static_cast<char16_t>(u16sur1(c_whole)),
+						static_cast<char16_t>(u16sur2(c_whole)),
 					});
 				}
-				else result.push_back(static_cast<wchar_t>(c_whole));
+				else result.push_back(static_cast<char16_t>(c_whole));
 			}
 			else result.push_back(u'?');
 			last_end = m.end();
