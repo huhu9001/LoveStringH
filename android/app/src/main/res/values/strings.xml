@@ -23,6 +23,8 @@
     <string name="text_button_findnext">Find next</string>
     <string name="text_button_replace">Replace</string>
     <string name="text_button_replaceall">Replace all</string>
+    <string name="text_button_x" translatable="false">\\x</string>
+    <string name="text_button_html" translatable="false">&amp;#x;</string>
     <string name="toast_output_copied">Output copied.</string>
     <string name="toast_invalid_regex">Invalid regex.</string>
     <string name="toast_regex_notfound">This regular expression found no match.</string>

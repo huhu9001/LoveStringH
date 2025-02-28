@@ -97,10 +97,10 @@ namespace lovestringh {
 			{ "\\", "\u0300" },//Grave
 			{ "^", "\u0302" },//Circumflex
 		};
-		static std::unique_ptr<Regexoid<char> const> const items[] = {
-			Regexoid<char>::Maker<"...">::make(dict_3),
-			Regexoid<char>::Maker<"..">::make(dict_2),
-			Regexoid<char>::Maker<".">::make(dict_1),
+		static std::unique_ptr<Regexoid<char>const>const items[] = {
+			RgxdMaker<char, "...">::make(dict_3),
+			RgxdMaker<char, "..">::make(dict_2),
+			RgxdMaker<char, ".">::make(dict_1),
 		};
 		return Transliterator("Latin (Alt+L)", items);
 	}

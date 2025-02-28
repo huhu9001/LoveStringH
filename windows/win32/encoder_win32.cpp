@@ -18,7 +18,7 @@ static std::map<std::string_view, UINT>const dict_codepage = {
 };
 
 bool lovestringh::Encoder::has_charset() const {
-	if (auto i = dict_codepage.find(name); i != dict_codepage.end()) {
+	if (auto const i = dict_codepage.find(name); i != dict_codepage.end()) {
 		return IsValidCodePage(i->second);
 	}
 	else return true;

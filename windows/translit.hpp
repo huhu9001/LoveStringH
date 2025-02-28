@@ -12,7 +12,9 @@ namespace lovestringh {
 	struct Transliterator {
 		std::string_view const name;
 
-		Transliterator(std::string_view name, std::span<std::unique_ptr<Regexoid<char>const>const>items)
+		Transliterator(
+			std::string_view name,
+			std::span<std::unique_ptr<Regexoid<char>const>const> items)
 			:name(name), items(items) {}
 		Transliterator(Transliterator const&) = delete;
 		Transliterator(Transliterator&&) = delete;

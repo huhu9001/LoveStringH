@@ -61,7 +61,7 @@ object Greek {
                 else -> null
             }
         },
-        Transliterator.RegexItem(Regex("(?<=[A-Za-z](?:[()~/\\\\]|[()~/\\\\][()~/\\\\]))s(?=[^A-Za-z]|$)"), "\u03C2"),
+        Transliterator.RegexItem(Regex("(?<=[A-Za-z](?:|[()~/\\\\]|[()~/\\\\][()~/\\\\]))s(?=[^A-Za-z]|$)"), "\u03C2"),
         Transliterator.RegexItem(Regex("..."), mapOf(
             "I:/" to "\u0390", "i:/" to "\u0390",
             "Y:/" to "\u03B0", "y:/" to "\u03B0",

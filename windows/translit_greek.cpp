@@ -2,7 +2,7 @@
 
 #include"helper_func.hpp"
 
-static const std::map<std::string_view, int> dict_tilde = {
+static const std::map<std::string_view, int> dict_tilde{
     {"a", 0x1F06},
 	{"A", 0x1F0E},
 	{"h", 0x1F26},
@@ -23,7 +23,7 @@ static const std::map<std::string_view, int> dict_tilde = {
 
 template<typename Match> bool tilde(Match const&m, std::string&out) {
 	uint32_t c;
-	if (auto i = dict_tilde.find(m.template get<1>().to_view()); i != dict_tilde.cend())
+	if (auto const i = dict_tilde.find(m.template get<1>().to_view()); i != dict_tilde.cend())
 		c = i->second;
 	else return false;
 
@@ -35,7 +35,7 @@ template<typename Match> bool tilde(Match const&m, std::string&out) {
 	return true;
 }
 
-static const std::map<std::string_view, int> dict_acute = {
+static const std::map<std::string_view, int> dict_acute{
     {"a", 0x1F00},
 	{"A", 0x1F08},
 	{"e", 0x1F10},
@@ -60,13 +60,14 @@ static const std::map<std::string_view, int> dict_acute = {
 
 template<typename Match> bool acute(Match const&m, std::string&out) {
 	uint32_t c;
-	if (auto i = dict_acute.find(m.template get<1>().to_view()); i != dict_acute.cend())
+	if (auto const i = dict_acute.find(m.template get<1>().to_view()); i != dict_acute.cend())
 		c = i->second;
 	else return false;
 
 	c += m.template get<2>().to_view() == ")" ? 0 : 1;
 
-	c += m.template get<3>().to_view() == "\\" ? 2 : m.template get<3>().to_view() == "/" ? 4 : 0;
+	c += m.template get<3>().to_view() == "\\" ? 2 :
+		m.template get<3>().to_view() == "/" ? 4 : 0;
 
 	auto const len = out.length();
 	out.resize(len + 4);
@@ -162,15 +163,14 @@ namespace lovestringh {
 			{ "Q", "\u03D8" }, { "q", "\u03D9" },
 			{ "W", "\u03DC" }, { "w", "\u03DD" },
 		};
-		static std::unique_ptr<Regexoid<char> const> const items[] = {
-			Regexoid<char>::Maker<"([AHIVahiyv]|[AHV][Jj]|[ahv]j)([()])~">::make(tilde),
-			Regexoid<char>::Maker<"([AEHIOVaehioyv]|[AHV][Jj]|[ahv]j)([()])([/\\\\]?)">::make(acute),
-			Regexoid<char>::Maker<"Y\\(([/\\\\~]?)">::make(dict_y),
-			Regexoid<char>::Maker<"(?<=[A-Za-z][()~/\\\\][()~/\\\\])s(?=[^A-Za-z]|$)">::make("\u03C2"),
-			Regexoid<char>::Maker<"(?<=[A-Za-z][()~/\\\\])s(?=[^A-Za-z]|$)">::make("\u03C2"),
-			Regexoid<char>::Maker<"...">::make(dict_3),
-			Regexoid<char>::Maker<"..'?">::make(dict_2),
-			Regexoid<char>::Maker<".'?">::make(dict_1),
+		static std::unique_ptr<Regexoid<char>const>const items[] = {
+			RgxdMaker<char, "([AHIVahiyv]|[AHV][Jj]|[ahv]j)([()])~">::make(tilde),
+			RgxdMaker<char, "([AEHIOVaehioyv]|[AHV][Jj]|[ahv]j)([()])([/\\\\]?)">::make(acute),
+			RgxdMaker<char, "Y\\(([/\\\\~]?)">::make(dict_y),
+			RgxdMaker<char, "(?<=[A-Za-z](?:|[()~/\\\\]|[()~/\\\\][()~/\\\\]))s(?=[^A-Za-z]|$)">::make("\u03C2"),
+			RgxdMaker<char, "...">::make(dict_3),
+			RgxdMaker<char, "..">::make(dict_2),
+			RgxdMaker<char, ".">::make(dict_1),
 		};
 		return Transliterator("Greek (Alt+G)", items);
 	}

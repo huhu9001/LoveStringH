@@ -5,7 +5,7 @@
 #include<ctre.hpp>
 
 template<typename TChar> struct Pseudoregex {
-	std::basic_string_view<TChar> s;
+	std::basic_string_view<TChar>const s;
 	boost::regex re;
 	std::string sc;
 
@@ -42,7 +42,7 @@ template<typename TChar> struct Pseudoregex {
 	}
 
 	struct Iter {
-		std::basic_string_view<TChar> s;
+		std::basic_string_view<TChar>const s;
 		boost::cregex_iterator citer;
 
 		bool operator==(Iter other) { return citer == other.citer; }
@@ -57,14 +57,14 @@ template<typename TChar> struct Pseudoregex {
 	Iter begin() const {
 		char const*const s_start = sc.data();
 		char const*const s_end = s_start + sc.size();
-		return Iter{
+		return {
 			.s = s,
 			.citer = boost::cregex_iterator(s_start, s_end, re),
 		};
 	}
 
-	Iter const end() const {
-		return Iter{
+	Iter end() const {
+		return {
 			.s = s,
 			.citer = boost::cregex_iterator()
 		};
@@ -77,12 +77,12 @@ template<typename TChar> void append_escape(
 	uint32_t cp)
 {
 	if constexpr (sizeof(TChar) == sizeof(char)) {
-		auto s = escape(cp);
-		auto start = reinterpret_cast<TChar const*>(s.data());
+		auto const s = escape(cp);
+		auto const start = reinterpret_cast<TChar const*>(s.data());
 		result.append(start, s.length());
 	}
 	else {
-		for (unsigned char c : escape(cp))
+		for (unsigned char const c : escape(cp))
 			result.push_back(static_cast<TChar>(c));
 	}
 }
@@ -98,8 +98,7 @@ std::u8string lovestringh::Encoder::encode(
 	for (auto s_sub : Pseudoregex(std::u8string_view(clast, cend), exclude)) {
 		char8_t const*const csubbegin = s_sub.data();
 		char8_t const*const csubend = csubbegin + s_sub.length();
-		if (clast < csubbegin)
-			result.append(clast, csubbegin);
+		if (clast < csubbegin) result.append(clast, csubbegin);
 
 		if (name == NAME_UTF8) {
 			for (char8_t const*c = csubbegin; c < csubend; ++c)
@@ -189,7 +188,7 @@ std::u16string lovestringh::Encoder::encode(
 				else result_append(result, escape, *c);
 			}
 		}
-		else for (unsigned char uc : to_charset(name, std::u16string_view(csubbegin, csubend)))
+		else for (unsigned char const uc : to_charset(name, std::u16string_view(csubbegin, csubend)))
 			append_escape(result, escape, uc);
 
 		clast = csubend;
@@ -201,9 +200,9 @@ std::u16string lovestringh::Encoder::encode(
 
 std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 	auto const toi = +[](std::u8string_view v, int radix)->uint32_t {
-		uint32_t c = '?';
-		auto start = reinterpret_cast<char const*>(v.data()), end = start + v.size();
-		std::from_chars(start, end, c, radix);
+		uint32_t c = 0xFFFD;
+		auto const start = reinterpret_cast<char const*>(v.data());
+		std::from_chars(start, start + v.size(), c, radix);
 		return c;
 	};
 
@@ -229,24 +228,24 @@ std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 		static_assert(sizeof(long) == sizeof(uint32_t));
 		static_assert(sizeof(long long) == sizeof(uint64_t));
 		uint32_t c;
-		if (m.get<1>()) c = toi(m.get<1>().view(), 16);
-		else if (m.get<2>()) c = toi(m.get<2>().view(), 16);
-		else if (m.get<3>()) c = toi(m.get<3>().view(), 16);
+		if (m.get<1>()) c = toi(m.get<1>().to_view(), 8);
+		else if (m.get<2>()) c = toi(m.get<2>().to_view(), 16);
+		else if (m.get<3>()) c = toi(m.get<3>().to_view(), 16);
 		else {
 			decode_piece(bs, result);
 
 			uint32_t const c_whole =
-				m.get<4>() ? toi(m.get<4>().view(), 16) :
-				m.get<5>() ? toi(m.get<5>().view(), 16) :
-				m.get<6>() ? toi(m.get<6>().view(), 10) :
-				toi(m.get<7>().view(), 16);
+				m.get<4>() ? toi(m.get<4>().to_view(), 16) :
+				m.get<5>() ? toi(m.get<5>().to_view(), 16) :
+				m.get<6>() ? toi(m.get<6>().to_view(), 10) :
+				toi(m.get<7>().to_view(), 16);
 
 			if (c_whole < 0x110000) {
 				size_t const len = result.length();
 				result.resize(len + 4, '\0');
 				result.resize(len + u32u8(c_whole, result.data() + len));
 			}
-			else result.push_back(u8'?');
+			else result.append(u8"\uFFFD");
 			last_end = m.end();
 			continue;
 		}
@@ -279,12 +278,12 @@ std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 
 std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 	auto const toi = +[](std::u16string_view v, int radix)->uint32_t {
-		uint32_t c = '?';
+		uint32_t c = 0xFFFD;
 		std::vector<char> vc;
 		vc.reserve(v.size());
-		for (auto chr : v) vc.push_back(static_cast<char>(chr));
-		auto start = vc.data(), end = start + vc.size();
-		std::from_chars(start, end, c, radix);
+		for (auto const chr : v) vc.push_back(static_cast<char>(chr));
+		auto const start = vc.data();
+		std::from_chars(start, start + vc.size(), c, radix);
 		return c;
 	};
 
@@ -310,17 +309,17 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 		static_assert(sizeof(long) == sizeof(uint32_t));
 		static_assert(sizeof(long long) == sizeof(uint64_t));
 		uint32_t c;
-		if (m.get<1>()) c = toi(m.get<1>().view(), 16);
-		else if (m.get<2>()) c = toi(m.get<2>().view(), 16);
-		else if (m.get<3>()) c = toi(m.get<3>().view(), 16);
+		if (m.get<1>()) c = toi(m.get<1>().to_view(), 8);
+		else if (m.get<2>()) c = toi(m.get<2>().to_view(), 16);
+		else if (m.get<3>()) c = toi(m.get<3>().to_view(), 16);
 		else {
 			decode_piece(bs, result);
 
 			uint32_t const c_whole =
-				m.get<4>() ? toi(m.get<4>().view(), 16) :
-				m.get<5>() ? toi(m.get<5>().view(), 16) :
-				m.get<6>() ? toi(m.get<6>().view(), 10) :
-				toi(m.get<7>().view(), 16);
+				m.get<4>() ? toi(m.get<4>().to_view(), 16) :
+				m.get<5>() ? toi(m.get<5>().to_view(), 16) :
+				m.get<6>() ? toi(m.get<6>().to_view(), 10) :
+				toi(m.get<7>().to_view(), 16);
 
 			if (c_whole < 0x110000) {
 				if (c_whole >= 0x10000 && c_whole < 0x110000) {
@@ -331,7 +330,7 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 				}
 				else result.push_back(static_cast<char16_t>(c_whole));
 			}
-			else result.push_back(u'?');
+			else result.append(u"\uFFFD");
 			last_end = m.end();
 			continue;
 		}
@@ -442,7 +441,6 @@ void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u16string&s_o
 		}
 	}
 	else if (name == NAME_UTF16) {
-		uint32_t surrogate = 0U;
 		for (auto i = bs.begin(), end = bs.end() - 1; i < end; i += 2) {
 			s_out.push_back(static_cast<unsigned char>(i[0])
 				| static_cast<unsigned char>(i[1]) << 8);

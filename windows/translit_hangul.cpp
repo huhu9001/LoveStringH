@@ -11,7 +11,7 @@
 #define PAT_CODA PAT_CODA_2 "|" PAT_CODA_1 "|"
 #define PAT_JAMO "n[ntsz]|l[xdzq]|lps|m[psz]|ps?[kt]|p[ct]h|s[kntp]|sch|ng[qsz]|fh|hh|[wfvzyq]|"
 
-static const std::map<std::string_view, int> dict_initial = {
+static const std::map<std::string_view, int> dict_initial{
 	{"g", 0},
 	{"kk", 1},
 	{"n", 2},
@@ -31,9 +31,7 @@ static const std::map<std::string_view, int> dict_initial = {
 	{"t", 16},
 	{"p", 17}, {"f", 17},
 	{"h", 18},
-};
-
-static const std::map<std::string_view, int> dict_median = {
+}, dict_median{
 	{"a", 0},
 	{"ae", 1},
 	{"ya", 2},
@@ -55,9 +53,7 @@ static const std::map<std::string_view, int> dict_median = {
 	{"eu", 18},
 	{"ui", 19}, {"yi", 19},
 	{"i", 20},
-};
-
-static const std::map<std::string_view, int> dict_coda = {
+}, dict_coda{
 	{"", 0},
 	{"k", 1}, {"g", 1},
 	{"kk", 2},
@@ -90,17 +86,20 @@ static const std::map<std::string_view, int> dict_coda = {
 
 template<typename Match> bool syllable(Match const&m, std::string&out) {
 	uint32_t initial;
-	if (auto i = dict_initial.find(m.template get<1>().to_view()); i != dict_initial.cend())
+	if (auto const i = dict_initial.find(m.template get<1>().to_view());
+		i != dict_initial.cend())
 		initial = i->second;
 	else return false;
 
 	uint32_t median;
-	if (auto i = dict_median.find(m.template get<2>().to_view()); i != dict_median.cend())
+	if (auto const i = dict_median.find(m.template get<2>().to_view());
+		i != dict_median.cend())
 		median = i->second;
 	else return false;
 
 	uint32_t coda;
-	if (auto i = dict_coda.find(m.template get<3>().to_view()); i != dict_coda.cend())
+	if (auto const i = dict_coda.find(m.template get<3>().to_view());
+		i != dict_coda.cend())
 		coda = i->second;
 	else return false;
 
@@ -111,7 +110,7 @@ template<typename Match> bool syllable(Match const&m, std::string&out) {
 	return true;
 }
 
-static const std::map<std::string_view, int> dict_initial_archaic = {
+static const std::map<std::string_view, int> dict_initial_archaic{
 	{"K", 0x1100},
 	{"G", 0x1101},
 	{"N", 0x1102},
@@ -237,9 +236,7 @@ static const std::map<std::string_view, int> dict_initial_archaic = {
 	{"PHH", 0xa97a},
 	{"HS", 0xa97b},
 	{"QQ", 0xa97c},
-};
-
-static const std::map<std::string_view, int> dict_median_archaic = {
+}, dict_median_archaic{
 	{"A", 0x1161},
 	{"AI", 0x1162},
 	{"YA", 0x1163},
@@ -335,9 +332,7 @@ static const std::map<std::string_view, int> dict_median_archaic = {
 	{"II", 0xd7c4},
 	{"VA", 0xd7c5},
 	{"VEI", 0xd7c6},
-};
-
-static const std::map<std::string_view, int> dict_coda_archaic = {
+}, dict_coda_archaic{
 	{ "", 0 },
 	{"K", 0x11a8},
 	{"G", 0x11a9},
@@ -482,15 +477,18 @@ static const std::map<std::string_view, int> dict_coda_archaic = {
 template<typename Match> bool syllable_archaic(Match const&m, std::string&out) {
 	uint32_t result[4];
 
-	if (auto i = dict_initial_archaic.find(m.template get<1>().to_view()); i != dict_initial_archaic.cend())
+	if (auto const i = dict_initial_archaic.find(m.template get<1>().to_view());
+		i != dict_initial_archaic.cend())
 		result[0] = i->second;
 	else return false;
 
-	if (auto i = dict_median_archaic.find(m.template get<2>().to_view()); i != dict_median_archaic.cend())
+	if (auto const i = dict_median_archaic.find(m.template get<2>().to_view());
+		i != dict_median_archaic.cend())
 		result[1] = i->second;
 	else return false;
 
-	if (auto i = dict_coda_archaic.find(m.template get<3>().to_view()); i != dict_coda_archaic.cend())
+	if (auto const i = dict_coda_archaic.find(m.template get<3>().to_view());
+		i != dict_coda_archaic.cend())
 		result[2] = i->second;
 	else return false;
 
@@ -581,15 +579,15 @@ namespace lovestringh {
 			{ "y", "\u3180" },
 			{ "q", "\u3186" },
 		};
-		static std::unique_ptr<Regexoid<char> const> const items[] = {
-			Regexoid<char>::Maker<"(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(l)(?=[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
-			Regexoid<char>::Maker<"(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))()(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
-			Regexoid<char>::Maker<"(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA_1 ")(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
-			Regexoid<char>::Maker<"(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA ")'?">::make(syllable),
-			Regexoid<char>::Maker<"([B-DF-HJ-NP-TXZ]*)([AEIOUVWY]+)([B-DF-HJ-NP-TXZ]*)([012]?)'?">::make(syllable_archaic),
-			Regexoid<char>::Maker<"...">::make(dict_3),
-			Regexoid<char>::Maker<"..">::make(dict_2),
-			Regexoid<char>::Maker<".">::make(dict_1),
+		static std::unique_ptr<Regexoid<char>const>const items[] = {
+			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(l)(?=[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
+			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))()(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
+			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA_1 ")(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
+			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA ")'?">::make(syllable),
+			RgxdMaker<char, "([B-DF-HJ-NP-TXZ]*)([AEIOUVWY]+)([B-DF-HJ-NP-TXZ]*)([012]?)'?">::make(syllable_archaic),
+			RgxdMaker<char, "...">::make(dict_3),
+			RgxdMaker<char, "..">::make(dict_2),
+			RgxdMaker<char, ".">::make(dict_1),
 		};
 		return Transliterator("Hangul (Alt+K)", items);
 	}

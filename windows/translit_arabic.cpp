@@ -57,11 +57,11 @@ namespace lovestringh {
 			{ "-", "\u0640" },
 		};
 
-		static std::unique_ptr<Regexoid<char> const> const items[] = {
-			Regexoid<char>::Maker<"(?<![A-Za-z])([aiu])(?=[A-Za-z])">::make(dict_initial),
-			Regexoid<char>::Maker<"(?<=[A-Za-z])-(?=[A-Za-z])">::make(""),
-			Regexoid<char>::Maker<"..">::make(dict_2),
-			Regexoid<char>::Maker<".">::make(dict_1),
+		static std::unique_ptr<Regexoid<char>const>const items[] = {
+			RgxdMaker<char, "(?<![A-Za-z])([aiu])(?=[A-Za-z])">::make(dict_initial),
+			RgxdMaker<char, "(?<=[A-Za-z])-(?=[A-Za-z])">::make(""),
+			RgxdMaker<char, "..">::make(dict_2),
+			RgxdMaker<char, ".">::make(dict_1),
 		};
 		return Transliterator("Arabic (Alt+A)", items);
 	}

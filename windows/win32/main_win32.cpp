@@ -60,76 +60,23 @@ static constexpr int HK_ALT_R = 507;
 static constexpr int HK_ALT_A = 508;
 static constexpr int HK_ALT_K = 509;
 
-static ACCEL accels[] = {
-	{
-		.fVirt = FVIRTKEY,
-		.key = VK_F2,
-		.cmd = HK_F2,
-	},
-	{
-		.fVirt = FVIRTKEY,
-		.key = VK_F3,
-		.cmd = HK_F3,
-	},
-	{
-		.fVirt = FVIRTKEY | FCONTROL,
-		.key = 'A',
-		.cmd = HK_CTRL_A,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'Z',
-		.cmd = HK_ALT_Z,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'X',
-		.cmd = HK_ALT_X,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'L',
-		.cmd = HK_ALT_L,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'G',
-		.cmd = HK_ALT_G,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'R',
-		.cmd = HK_ALT_R,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'A',
-		.cmd = HK_ALT_A,
-	},
-	{
-		.fVirt = FVIRTKEY | FALT,
-		.key = 'K',
-		.cmd = HK_ALT_K,
-	},
-};
-
 static wchar_t buff_in[0x10000];
 static wchar_t buff_in2[0x80];
 
 static void encode() {
 	if (GetWindowTextLengthW(hedit_char) < 0x10000 - 1) {
 		GetWindowTextW(hedit_char, buff_in, 0x10000);
-		std::u16string_view in_v(reinterpret_cast<char16_t const*>(buff_in));
+		std::u16string_view const in_v(reinterpret_cast<char16_t const*>(buff_in));
 
 		if (GetWindowTextLengthW(hedit_encodeonly) < 0x80 - 1)
 			GetWindowTextW(hedit_encodeonly, buff_in2, 0x80);
 		else buff_in2[0] = 0;
-		std::u16string_view ne_v(reinterpret_cast<char16_t const*>(buff_in2));
+		std::u16string_view const ne_v(reinterpret_cast<char16_t const*>(buff_in2));
 
 		auto&e = lovestringh::all_encoders[sel_encoding];
-		auto es =
+		auto const es =
 			e.styles[SendMessageW(hcbox_escape[sel_encoding], CB_GETCURSEL, 0, 0)].escape;
-		auto out = e.encode(in_v, ne_v, es);
+		auto const out = e.encode(in_v, ne_v, es);
 		SetWindowTextW(hedit_byte, reinterpret_cast<LPCWSTR>(out.c_str()));
 	}
 	else SetWindowTextW(hedit_byte, reinterpret_cast<LPCWSTR>(ERR_TOO_LONG));
@@ -138,10 +85,8 @@ static void encode() {
 static void decode() {
 	if (GetWindowTextLengthW(hedit_byte) < 0x10000 - 1) {
 		GetWindowTextW(hedit_byte, buff_in, 0x10000);
-		auto b16 = reinterpret_cast<char16_t const*>(buff_in);
-		std::u16string_view in_v(b16);
-		auto&e = lovestringh::all_encoders[sel_encoding];
-		auto out = e.decode(in_v);
+		std::u16string_view const in_v(reinterpret_cast<char16_t const*>(buff_in));
+		auto const out = lovestringh::all_encoders[sel_encoding].decode(in_v);
 		SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(out.c_str()));
 	}
 	else SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(ERR_TOO_LONG));
@@ -213,10 +158,10 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			hinstance,
 			nullptr);
 
-		for (int i = 0; i < NUM_ENCODERS; ++i) {
+		for (size_t i = 0; i < NUM_ENCODERS; ++i) {
 			auto const&e = lovestringh::all_encoders[i];
 			if (e.has_charset()) {
-				size_t len = e.name.length();
+				size_t const len = e.name.length();
 				char const*start = e.name.data();
 				char const*end = start + len;
 				std::copy(start, end, buff_in);
@@ -238,7 +183,7 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 					hinstance,
 					nullptr);
 				for (auto const&ec : e.styles) {
-					size_t len = ec.name.length();
+					size_t const len = ec.name.length();
 					char const*start = ec.name.data();
 					char const*end = start + len;
 					std::copy(start, end, buff_in);
@@ -307,7 +252,7 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	case WM_COMMAND:
 		switch (wParam) {
 		default:
-			for (int i = 0; i < NUM_ENCODERS; ++i) {
+			for (size_t i = 0; i < NUM_ENCODERS; ++i) {
 				if (wParam == MAKEWPARAM(ID_CBOX_ESCAPE_FIRST + i, CBN_SELCHANGE))
 					encode();
 				return 0;
@@ -559,7 +504,7 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 			}
 		} return 0;
 		case MAKEWPARAM(HK_F2, 1): {
-			HWND hedit = GetFocus();
+			HWND const hedit = GetFocus();
 			if (hedit == hedit_char) {
 				SendMessageW(hedit_byte, EM_SETSEL, 0, -1);
 				SendMessageW(hedit_byte, WM_COPY, 0, 0);
@@ -577,14 +522,14 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 			}
 		} return 0;
 		case MAKEWPARAM(HK_F3, 1): {
-			HWND hedit = GetFocus();
+			HWND const hedit = GetFocus();
 			if (hedit == hedit_char) SetFocus(hedit_byte);
 			else if (hedit == hedit_byte) SetFocus(hedit_char);
 			else if (hedit == hedit_roman) SetFocus(hedit_nonroman);
 			else if (hedit == hedit_nonroman) SetFocus(hedit_roman);
 		} return 0;
 		case MAKEWPARAM(HK_CTRL_A, 1): {
-			HWND hedit = GetFocus();
+			HWND const hedit = GetFocus();
 			if (hedit == hedit_char
 				|| hedit == hedit_byte
 				|| hedit == hedit_roman) SendMessageW(hedit, EM_SETSEL, 0, -1);
@@ -642,39 +587,87 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 }
 
 int main(int, char**) {
-	{
-		constexpr INITCOMMONCONTROLSEX coninit{
-			.dwSize = sizeof(INITCOMMONCONTROLSEX),
-			.dwICC = ICC_STANDARD_CLASSES | ICC_TAB_CLASSES,
-		};
-		InitCommonControlsEx(&coninit);
-	}
+	static constexpr INITCOMMONCONTROLSEX coninit{
+		.dwSize = sizeof(INITCOMMONCONTROLSEX),
+		.dwICC = ICC_STANDARD_CLASSES | ICC_TAB_CLASSES,
+	};
+	InitCommonControlsEx(&coninit);
 
 	hinstance = GetModuleHandleW(nullptr);
 	hfont = CreateFontIndirectW(&logfont);
 
-	HACCEL haccel = CreateAcceleratorTableW(accels, sizeof(accels) / sizeof(*accels));
+	static ACCEL accels[] = {
+		{
+			.fVirt = FVIRTKEY,
+			.key = VK_F2,
+			.cmd = HK_F2,
+		},
+		{
+			.fVirt = FVIRTKEY,
+			.key = VK_F3,
+			.cmd = HK_F3,
+		},
+		{
+			.fVirt = FVIRTKEY | FCONTROL,
+			.key = 'A',
+			.cmd = HK_CTRL_A,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'Z',
+			.cmd = HK_ALT_Z,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'X',
+			.cmd = HK_ALT_X,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'L',
+			.cmd = HK_ALT_L,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'G',
+			.cmd = HK_ALT_G,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'R',
+			.cmd = HK_ALT_R,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'A',
+			.cmd = HK_ALT_A,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = 'K',
+			.cmd = HK_ALT_K,
+		},
+	};
+	static HACCEL haccel = CreateAcceleratorTableW(accels, sizeof(accels) / sizeof(*accels));
 
-	{
-		WNDCLASSW const wclass_main{
-			.lpfnWndProc = wndproc_main,
-			.hInstance = hinstance,
-			.hCursor = LoadCursorW(nullptr, reinterpret_cast<LPCWSTR>(IDC_ARROW)),
-			.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_3DFACE + 1),
-			.lpszClassName = L"FORM_MAIN",
-		};
-		auto const wca_main = RegisterClassW(&wclass_main);
-		hwnd_main = CreateWindowW(
-			reinterpret_cast<LPCWSTR>(wca_main),
-			L"Love String H",
-			WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-			100, 100,
-			400, 300,
-			nullptr,
-			nullptr,
-			hinstance,
-			nullptr);
-	}
+	static WNDCLASSW const wclass_main{
+		.lpfnWndProc = wndproc_main,
+		.hInstance = hinstance,
+		.hCursor = LoadCursorW(nullptr, reinterpret_cast<LPCWSTR>(IDC_ARROW)),
+		.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_3DFACE + 1),
+		.lpszClassName = L"FORM_MAIN",
+	};
+	static auto const wca_main = RegisterClassW(&wclass_main);
+	hwnd_main = CreateWindowW(
+		reinterpret_cast<LPCWSTR>(wca_main),
+		L"Love String H",
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		100, 100,
+		400, 300,
+		nullptr,
+		nullptr,
+		hinstance,
+		nullptr);
 
 	for (MSG msg; GetMessageW(&msg, nullptr, 0, 0);) {
 		TranslateAcceleratorW(hwnd_main, haccel, &msg) || TranslateMessage(&msg);

@@ -45,8 +45,13 @@ class TranslitFragment : androidx.fragment.app.Fragment() {
             body.buttonCopy.setOnClickListener {
                 clipboard.setPrimaryClip(android.content.ClipData.newPlainText(context.getString(com.huhu9001.lovestringh.R.string.app_name), body.edittextOutput.text))
                 toastCopied.show()
+                body.edittextInput.selectAll()
+                body.edittextInput.requestFocus()
             }
-            body.buttonClear.setOnClickListener { body.edittextInput.text.clear() }
+            body.buttonClear.setOnClickListener {
+                body.edittextInput.text.clear()
+                body.edittextInput.requestFocus()
+            }
         }
 
         return body.root

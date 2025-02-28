@@ -23,7 +23,8 @@ class HomeFragment : androidx.fragment.app.Fragment() {
     private var stopTextChangedOnce = false
     private var stopEscapestyleChangedOnce = false
 
-    override fun onCreateView(
+
+    @android.annotation.SuppressLint("SetTextI18n") override fun onCreateView(
         inflater:android.view.LayoutInflater,
         container:android.view.ViewGroup?,
         savedInstanceState:android.os.Bundle?)
@@ -89,13 +90,40 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                 override fun onNothingSelected(p0:android.widget.AdapterView<*>?) = p0?.setSelection(0) ?: Unit
             }
             body.edittextDonotencode.doAfterTextChanged { encodeText() }
+
+            body.buttonX.setOnClickListener {
+                val start = body.edittextByte.selectionStart
+                body.edittextByte.setText("${
+                    body.edittextByte.text.slice(0 ..< start)
+                }\\x${
+                    body.edittextByte.text.slice(body.edittextByte.selectionEnd ..< body.edittextByte.length())
+                }")
+                body.edittextByte.setSelection(start + 2)
+                body.edittextByte.requestFocus()
+            }
+
+            body.buttonHtml.setOnClickListener {
+                val start = body.edittextByte.selectionStart
+                body.edittextByte.setText("${
+                    body.edittextByte.text.slice(0 ..< start)
+                }&#x;${
+                    body.edittextByte.text.slice(body.edittextByte.selectionEnd ..< body.edittextByte.length())
+                }")
+                body.edittextByte.setSelection(start + 3)
+                body.edittextByte.requestFocus()
+            }
+
             body.buttonCopyChar.setOnClickListener {
                 clipboard.setPrimaryClip(android.content.ClipData.newPlainText(context.getString(com.huhu9001.lovestringh.R.string.app_name), body.edittextChar.text))
                 toastCopied.show()
+                body.edittextByte.selectAll()
+                body.edittextByte.requestFocus()
             }
             body.buttonCopyByte.setOnClickListener {
                 clipboard.setPrimaryClip(android.content.ClipData.newPlainText(context.getString(com.huhu9001.lovestringh.R.string.app_name), body.edittextByte.text))
                 toastCopied.show()
+                body.edittextChar.selectAll()
+                body.edittextChar.requestFocus()
             }
             body.buttonClear.setOnClickListener {
                 (if (body.checkboxChangebytes.isChecked)
