@@ -1,5 +1,6 @@
 package com.huhu9001.lovestringh.ui.translit
 
+import android.view.inputmethod.InputMethodManager
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import com.huhu9001.lovestringh.translit.Transliterator
@@ -33,6 +34,8 @@ class TranslitFragment : androidx.fragment.app.Fragment() {
         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         val toastCopied =
             android.widget.Toast.makeText(context, com.huhu9001.lovestringh.R.string.toast_output_copied, android.widget.Toast.LENGTH_SHORT)
+        val imm =
+            context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         android.os.Handler(context.mainLooper).post {
             body.edittextInput.doAfterTextChanged(::textChangedInput)
@@ -52,6 +55,9 @@ class TranslitFragment : androidx.fragment.app.Fragment() {
                 body.edittextInput.text.clear()
                 body.edittextInput.requestFocus()
             }
+
+            if (body.edittextInput.requestFocus())
+                imm.showSoftInput(body.edittextInput, InputMethodManager.SHOW_IMPLICIT)
         }
 
         return body.root

@@ -486,6 +486,17 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 		}
 		MoveWindow(hb_font, LOWORD(lParam) - 22, 2, 20, 20, true);
 		return 0;
+	case WM_ACTIVATE:
+		if (wParam != WA_INACTIVE) {
+			switch (sel_tab_main) {
+			default: break;
+			case 0:
+				SetFocus(SendMessageW(hb_reencode, BM_GETCHECK, 0, 0) ? hedit_char : hedit_byte);
+				break;
+			case 1: SetFocus(hedit_roman); break;
+			}
+		}
+		return 0;
 	case WM_COMMAND:
 		switch (wParam) {
 		default: return DefWindowProcW(hWnd, uMsg, wParam, lParam);

@@ -1,5 +1,6 @@
 package com.huhu9001.lovestringh.ui.home
 
+import android.view.inputmethod.InputMethodManager
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import com.huhu9001.lovestringh.encoding.Encoder
@@ -35,6 +36,8 @@ class HomeFragment : androidx.fragment.app.Fragment() {
         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         val toastCopied =
             android.widget.Toast.makeText(context, com.huhu9001.lovestringh.R.string.toast_output_copied, android.widget.Toast.LENGTH_SHORT)
+        val imm =
+            context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         body.spinnerEncoding.adapter = EncodingAdaptor(context)
         body.spinnerEscapestyle.adapter = EscapestyleAdaptor(context, body.spinnerEncoding)
@@ -129,6 +132,15 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                 (if (body.checkboxChangebytes.isChecked)
                     body.edittextChar
                 else body.edittextByte).text.clear()
+            }
+
+            if (body.checkboxChangebytes.isChecked) {
+                if (body.edittextChar.requestFocus())
+                    imm.showSoftInput(body.edittextChar, InputMethodManager.SHOW_IMPLICIT)
+            }
+            else {
+                if (body.edittextByte.requestFocus())
+                    imm.showSoftInput(body.edittextByte, InputMethodManager.SHOW_IMPLICIT)
             }
         }
         return body.root

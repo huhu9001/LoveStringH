@@ -1,5 +1,6 @@
 package com.huhu9001.lovestringh.ui.regex
 
+import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.doAfterTextChanged
 import com.huhu9001.lovestringh.R
 import com.huhu9001.lovestringh.regex.RegexHandler
@@ -27,6 +28,8 @@ class RegexFragment : androidx.fragment.app.Fragment() {
                 else -> android.widget.Toast.makeText(context, e.toString(), android.widget.Toast.LENGTH_SHORT)
             }.show()
         }
+        val imm =
+            context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         fun loadInput() {
             viewmodel.re.regex = body.edittextRegex.text.toString()
@@ -79,6 +82,9 @@ class RegexFragment : androidx.fragment.app.Fragment() {
                 }) { toast(it) }
             }
         }
+
+        if (body.edittextMain.requestFocus())
+            imm.showSoftInput(body.edittextMain, InputMethodManager.SHOW_IMPLICIT)
 
         return body.root
     }
