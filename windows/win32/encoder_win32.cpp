@@ -24,7 +24,7 @@ bool lovestringh::Encoder::has_charset() const {
 	else return true;
 }
 
-std::vector<char>lovestringh::Encoder::to_charset(
+std::vector<char> lovestringh::Encoder::to_charset(
 	std::string_view name,
 	std::u8string_view s)
 {
@@ -48,7 +48,7 @@ std::vector<char>lovestringh::Encoder::to_charset(
 	return to_charset(name, ws);
 }
 
-std::vector<char>lovestringh::Encoder::to_charset(
+std::vector<char> lovestringh::Encoder::to_charset(
 	std::string_view name,
 	std::u16string_view s)
 {
@@ -85,6 +85,7 @@ void lovestringh::Encoder::from_charset(
 	std::u16string ws;
 	from_charset(name, bs, ws);
 
+	size_t const len1 = s_out.size();
 	int const len2 = WideCharToMultiByte(
 		CP_UTF8,
 		0,
@@ -94,13 +95,13 @@ void lovestringh::Encoder::from_charset(
 		0,
 		nullptr,
 		nullptr);
-	s_out.resize(len2);
+	s_out.resize(len1 + len2);
 	WideCharToMultiByte(
 		CP_UTF8,
 		0,
 		reinterpret_cast<LPCWCH>(ws.data()),
 		static_cast<int>(ws.size()),
-		reinterpret_cast<LPSTR>(s_out.data()),
+		reinterpret_cast<LPSTR>(s_out.data() + len1),
 		len2,
 		nullptr,
 		nullptr);
@@ -112,19 +113,20 @@ void lovestringh::Encoder::from_charset(
 	std::u16string&s_out)
 {
 	UINT const cp = dict_codepage.at(name);
-	int const len1 = MultiByteToWideChar(
+	size_t const len1 = s_out.size();
+	int const len2 = MultiByteToWideChar(
 		cp,
 		0,
 		bs.data(),
 		static_cast<int>(bs.size()),
 		nullptr,
 		0);
-	s_out.resize(len1);
+	s_out.resize(len1 + len2);
 	MultiByteToWideChar(
 		cp,
 		0,
 		bs.data(),
 		static_cast<int>(bs.size()),
-		reinterpret_cast<LPWSTR>(s_out.data()),
-		len1);
+		reinterpret_cast<LPWSTR>(s_out.data() + len1),
+		len2);
 }
