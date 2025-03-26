@@ -1,12 +1,34 @@
 #include<ctre.hpp>
 
-#include<map>
-#include<memory>
+#include<algorithm>
 #include<string_view>
 
 template<typename TChar> struct Regexoid {
 	virtual size_t read_write(std::basic_string_view<TChar>in, size_t pos, bool empty_before, std::basic_string<TChar>&out) const = 0;
-	virtual ~Regexoid() = default;
+protected:
+	~Regexoid() = default;
+};
+
+template<typename TKey, typename TValue> struct TDict {
+	template<size_t N> class Dict {
+	public:
+		constexpr Dict(std::pair<TKey const, TValue const>const(&input)[N]) {
+			std::copy(input, input + N, data);
+			std::sort(data, data + N);
+		}
+
+		constexpr TValue const*operator[](TKey key) const {
+			auto item = std::lower_bound(data, data + N, key, cmp);
+			return item->first == key ? &item->second : nullptr;
+		}
+
+	private:
+		std::pair<TKey, TValue> data[N];
+
+		constexpr static bool cmp(std::pair<TKey, TValue>const&item, TKey const&key) {
+			return item.first < key;
+		}
+	};
 };
 
 template<typename TChar, CTRE_REGEX_INPUT_TYPE pattern, typename... Modifiers> struct RgxdMaker {
@@ -21,6 +43,7 @@ private:
 		return thiz->output(m, out) ? m.size() : -1;
 	}
 
+public:
 	struct RegexoidFunc : Regexoid<TChar> {
 		FuncRegexoid const repl;
 		constexpr RegexoidFunc(FuncRegexoid repl) :repl(repl) {}
@@ -34,14 +57,15 @@ private:
 		}
 	};
 
-	struct RegexoidMap : Regexoid<TChar> {
-		std::map<std::basic_string_view<TChar>, std::basic_string_view<TChar>>const&dict;
-		RegexoidMap(std::map<std::basic_string_view<TChar>, std::basic_string_view<TChar>>const&dict) :dict(dict) {}
+	template<size_t N> struct RegexoidMap : Regexoid<TChar> {
+		TDict<std::basic_string_view<TChar>, std::basic_string_view<TChar>>::template Dict<N>const dict;
+
+		constexpr RegexoidMap(std::pair<std::basic_string_view<TChar>const, std::basic_string_view<TChar>const>const(&input)[N]) :dict(input) {}
 
 		bool output(Match const&m, std::basic_string<TChar>&out) const {
 			std::basic_string_view<TChar>const key = m.template get<(m.count() > 1 ? 1 : 0)>().to_view();
-			if (auto const entry = dict.find(key); entry != dict.end()) {
-				out.append(entry->second);
+			if (auto v = dict[key]; v != nullptr) {
+				out.append(*v);
 				return true;
 			}
 			else return false;
@@ -77,17 +101,4 @@ private:
 			return RgxdMaker::rw_from_output(this, in, pos, empty_before, out);
 		}
 	};
-
-public:
-	static std::unique_ptr<Regexoid<TChar>> make(FuncRegexoid repl) {
-		return std::make_unique<RegexoidFunc>(repl);
-	}
-
-	static std::unique_ptr<Regexoid<TChar>> make(std::map<std::basic_string_view<TChar>, std::basic_string_view<TChar>>const&dict) {
-		return std::make_unique<RegexoidMap>(dict);
-	}
-
-	static std::unique_ptr<Regexoid<TChar>> make(std::basic_string_view<TChar>str) {
-		return std::make_unique<RegexoidStr>(str);
-	}
 };
