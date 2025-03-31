@@ -11,7 +11,7 @@
 #define PAT_CODA PAT_CODA_2 "|" PAT_CODA_1 "|"
 #define PAT_JAMO "n[ntsz]|l[xdzq]|lps|m[psz]|ps?[kt]|p[ct]h|s[kntp]|sch|ng[qsz]|fh|hh|[wfvzyq]|"
 
-static const std::map<std::string_view, int> dict_initial{
+constexpr static ConstDict<std::string_view, int>::Dict dict_initial({
 	{"g", 0},
 	{"kk", 1},
 	{"n", 2},
@@ -31,7 +31,8 @@ static const std::map<std::string_view, int> dict_initial{
 	{"t", 16},
 	{"p", 17}, {"f", 17},
 	{"h", 18},
-}, dict_median{
+});
+constexpr static ConstDict<std::string_view, int>::Dict dict_median({
 	{"a", 0},
 	{"ae", 1},
 	{"ya", 2},
@@ -53,7 +54,8 @@ static const std::map<std::string_view, int> dict_initial{
 	{"eu", 18},
 	{"ui", 19}, {"yi", 19},
 	{"i", 20},
-}, dict_coda{
+});
+constexpr static ConstDict<std::string_view, int>::Dict dict_coda({
 	{"", 0},
 	{"k", 1}, {"g", 1},
 	{"kk", 2},
@@ -82,25 +84,22 @@ static const std::map<std::string_view, int> dict_initial{
 	{"t", 25}, {"th", 25},
 	{"f", 26}, {"ph", 26},
 	{"h", 27},
-};
+});
 
-template<typename Match> bool syllable(Match const&m, std::string&out) {
+template<typename Match> constexpr bool syllable(Match const&m, std::string&out) {
 	uint32_t initial;
-	if (auto const i = dict_initial.find(m.template get<1>().to_view());
-		i != dict_initial.cend())
-		initial = i->second;
+	if (auto const v = dict_initial[m.template get<1>().to_view()]; v != nullptr)
+		initial = *v;
 	else return false;
 
 	uint32_t median;
-	if (auto const i = dict_median.find(m.template get<2>().to_view());
-		i != dict_median.cend())
-		median = i->second;
+	if (auto const v = dict_median[m.template get<2>().to_view()]; v != nullptr)
+		median = *v;
 	else return false;
 
 	uint32_t coda;
-	if (auto const i = dict_coda.find(m.template get<3>().to_view());
-		i != dict_coda.cend())
-		coda = i->second;
+	if (auto const v = dict_coda[m.template get<3>().to_view()]; v != nullptr)
+		coda = *v;
 	else return false;
 
 	uint32_t const c = 0xAC00 + initial * 0x24C + median * 0x1C + coda;
@@ -110,7 +109,7 @@ template<typename Match> bool syllable(Match const&m, std::string&out) {
 	return true;
 }
 
-static const std::map<std::string_view, int> dict_initial_archaic{
+constexpr static ConstDict<std::string_view, int>::Dict dict_initial_archaic({
 	{"K", 0x1100},
 	{"G", 0x1101},
 	{"N", 0x1102},
@@ -236,7 +235,8 @@ static const std::map<std::string_view, int> dict_initial_archaic{
 	{"PHH", 0xa97a},
 	{"HS", 0xa97b},
 	{"QQ", 0xa97c},
-}, dict_median_archaic{
+});
+constexpr static ConstDict<std::string_view, int>::Dict dict_median_archaic({
 	{"A", 0x1161},
 	{"AI", 0x1162},
 	{"YA", 0x1163},
@@ -332,8 +332,9 @@ static const std::map<std::string_view, int> dict_initial_archaic{
 	{"II", 0xd7c4},
 	{"VA", 0xd7c5},
 	{"VEI", 0xd7c6},
-}, dict_coda_archaic{
-	{ "", 0 },
+});
+constexpr static ConstDict<std::string_view, int>::Dict dict_coda_archaic({
+	{"", 0 },
 	{"K", 0x11a8},
 	{"G", 0x11a9},
 	{"KS", 0x11aa},
@@ -472,24 +473,21 @@ static const std::map<std::string_view, int> dict_initial_archaic{
 	{"DG", 0xd7f9},
 	{"PHS", 0xd7fa},
 	{"PHTH", 0xd7fb},
-};
+});
 
-template<typename Match> bool syllable_archaic(Match const&m, std::string&out) {
+template<typename Match> constexpr bool syllable_archaic(Match const&m, std::string&out) {
 	uint32_t result[4];
 
-	if (auto const i = dict_initial_archaic.find(m.template get<1>().to_view());
-		i != dict_initial_archaic.cend())
-		result[0] = i->second;
+	if (auto const v = dict_initial_archaic[m.template get<1>().to_view()]; v != nullptr)
+		result[0] = *v;
 	else return false;
 
-	if (auto const i = dict_median_archaic.find(m.template get<2>().to_view());
-		i != dict_median_archaic.cend())
-		result[1] = i->second;
+	if (auto const v = dict_median_archaic[m.template get<2>().to_view()]; v != nullptr)
+		result[1] = *v;
 	else return false;
 
-	if (auto const i = dict_coda_archaic.find(m.template get<3>().to_view());
-		i != dict_coda_archaic.cend())
-		result[2] = i->second;
+	if (auto const v = dict_coda_archaic[m.template get<3>().to_view()]; v != nullptr)
+		result[2] = *v;
 	else return false;
 
 	result[3] = m.template get<4>().to_view() == "1" ? 0x302e :
@@ -505,90 +503,99 @@ template<typename Match> bool syllable_archaic(Match const&m, std::string&out) {
 	return true;
 }
 
+constexpr static RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(l)(?=[yw]?(?:" PAT_MEDIAN "))">::RegexoidFunc item_reul_coda(syllable);
+constexpr static RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))()(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::RegexoidFunc item_no_coda(syllable);
+constexpr static RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA_1 ")(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::RegexoidFunc item_next_ssang(syllable);
+constexpr static RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA ")'?">::RegexoidFunc item_syl(syllable);
+constexpr static RgxdMaker<char, "([B-DF-HJ-NP-TXZ]*)([AEIOUVWY]+)([B-DF-HJ-NP-TXZ]*)([012]?)'?">::RegexoidFunc item_archaic(syllable_archaic);
+constexpr static RgxdMaker<char, "...">::RegexoidMap item_3({
+	{ "lps", "\u316B" },
+	{ "psk", "\u3174" },
+	{ "pst", "\u3175" },
+	{ "pch", "\u3176" },
+	{ "pth", "\u3177" },
+	{ "sch", "\u317E" },
+	{ "ngq", "\u3181" },
+	{ "ngs", "\u3182" },
+	{ "ngz", "\u3183" },
+});
+constexpr static RgxdMaker<char, "..">::RegexoidMap item_2({
+	{ "kk", "\u3132" },
+	{ "tt", "\u3138" },
+	{ "pp", "\u3143" },
+	{ "ss", "\u3146" },
+	{ "ng", "\u3147" },
+	{ "jj", "\u3149" },
+	{ "ch", "\u314A" },
+
+	{ "ks", "\u3133" },
+	{ "nj", "\u3135" },
+	{ "nh", "\u3136" },
+	{ "lk", "\u313A" }, { "lg", "\u313A" },
+	{ "lm", "\u313B" },
+	{ "lb", "\u313C" },
+	{ "ls", "\u313D" },
+	{ "lt", "\u313E" },
+	{ "lp", "\u313F" },
+	{ "lh", "\u3140" },
+	{ "ps", "\u3144" },
+
+	{ "nn", "\u3165" },
+	{ "nt", "\u3166" },
+	{ "ns", "\u3167" },
+	{ "nz", "\u3168" },
+	{ "lx", "\u3169" },
+	{ "ld", "\u316A" },
+	{ "lz", "\u316C" },
+	{ "lq", "\u316D" },
+	{ "mp", "\u316E" },
+	{ "ms", "\u316F" },
+	{ "mz", "\u3170" },
+	{ "pk", "\u3172" },
+	{ "pt", "\u3173" },
+	{ "sk", "\u317A" },
+	{ "sn", "\u317B" },
+	{ "st", "\u317C" },
+	{ "sp", "\u317D" },
+	{ "fh", "\u3184" },
+	{ "hh", "\u3185" },
+});
+constexpr static RgxdMaker<char, ".">::RegexoidMap item_1({
+	{ "g", "\u3131" },
+	{ "n", "\u3134" },
+	{ "d", "\u3137" },
+	{ "r", "\u3139" }, { "l", "\u3139" },
+	{ "m", "\u3141" },
+	{ "b", "\u3142" },
+	{ "s", "\u3145" },
+	{ "j", "\u3148" },
+	{ "c", "\u314A" },
+	{ "k", "\u314B" },
+	{ "t", "\u314C" },
+	{ "p", "\u314D" },
+	{ "h", "\u314E" },
+
+	{ "w", "\u3171" },
+	{ "f", "\u3178" },
+	{ "v", "\u3179" },
+	{ "z", "\u317F" },
+	{ "y", "\u3180" },
+	{ "q", "\u3186" },
+});
+
+constexpr static Regexoid<char>const*items[] = {
+	&item_reul_coda,
+	&item_no_coda,
+	&item_next_ssang,
+	&item_syl,
+	&item_archaic,
+	&item_3,
+	&item_2,
+	&item_1,
+};
+
 namespace lovestringh {
 	Transliterator make_hangul() {
-		static std::map<std::string_view, std::string_view>const dict_3{
-			{ "lps", "\u316B" },
-			{ "psk", "\u3174" },
-			{ "pst", "\u3175" },
-			{ "pch", "\u3176" },
-			{ "pth", "\u3177" },
-			{ "sch", "\u317E" },
-			{ "ngq", "\u3181" },
-			{ "ngs", "\u3182" },
-			{ "ngz", "\u3183" },
-		}, dict_2{
-			{ "kk", "\u3132" },
-			{ "tt", "\u3138" },
-			{ "pp", "\u3143" },
-			{ "ss", "\u3146" },
-			{ "ng", "\u3147" },
-			{ "jj", "\u3149" },
-			{ "ch", "\u314A" },
-
-			{ "ks", "\u3133" },
-			{ "nj", "\u3135" },
-			{ "nh", "\u3136" },
-			{ "lk", "\u313A" }, { "lg", "\u313A" },
-			{ "lm", "\u313B" },
-			{ "lb", "\u313C" },
-			{ "ls", "\u313D" },
-			{ "lt", "\u313E" },
-			{ "lp", "\u313F" },
-			{ "lh", "\u3140" },
-			{ "ps", "\u3144" },
-
-			{ "nn", "\u3165" },
-			{ "nt", "\u3166" },
-			{ "ns", "\u3167" },
-			{ "nz", "\u3168" },
-			{ "lx", "\u3169" },
-			{ "ld", "\u316A" },
-			{ "lz", "\u316C" },
-			{ "lq", "\u316D" },
-			{ "mp", "\u316E" },
-			{ "ms", "\u316F" },
-			{ "mz", "\u3170" },
-			{ "pk", "\u3172" },
-			{ "pt", "\u3173" },
-			{ "sk", "\u317A" },
-			{ "sn", "\u317B" },
-			{ "st", "\u317C" },
-			{ "sp", "\u317D" },
-			{ "fh", "\u3184" },
-			{ "hh", "\u3185" },
-		}, dict_1{
-			{ "g", "\u3131" },
-			{ "n", "\u3134" },
-			{ "d", "\u3137" },
-			{ "r", "\u3139" }, { "l", "\u3139" },
-			{ "m", "\u3141" },
-			{ "b", "\u3142" },
-			{ "s", "\u3145" },
-			{ "j", "\u3148" },
-			{ "c", "\u314A" },
-			{ "k", "\u314B" },
-			{ "t", "\u314C" },
-			{ "p", "\u314D" },
-			{ "h", "\u314E" },
-
-			{ "w", "\u3171" },
-			{ "f", "\u3178" },
-			{ "v", "\u3179" },
-			{ "z", "\u317F" },
-			{ "y", "\u3180" },
-			{ "q", "\u3186" },
-		};
-		static std::unique_ptr<Regexoid<char>const>const items[] = {
-			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(l)(?=[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
-			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))()(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
-			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA_1 ")(?=(?:" PAT_INITIAL_2 "|" PAT_INITIAL_1 ")[yw]?(?:" PAT_MEDIAN "))">::make(syllable),
-			RgxdMaker<char, "(" PAT_INITIAL ")([yw]?(?:" PAT_MEDIAN "))(" PAT_CODA ")'?">::make(syllable),
-			RgxdMaker<char, "([B-DF-HJ-NP-TXZ]*)([AEIOUVWY]+)([B-DF-HJ-NP-TXZ]*)([012]?)'?">::make(syllable_archaic),
-			RgxdMaker<char, "...">::make(dict_3),
-			RgxdMaker<char, "..">::make(dict_2),
-			RgxdMaker<char, ".">::make(dict_1),
-		};
 		return Transliterator("Hangul (Alt+K)", items);
 	}
 }

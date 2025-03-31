@@ -63,6 +63,10 @@ static constexpr int HK_ALT_K = 509;
 static wchar_t buff_in[0x10000];
 static wchar_t buff_in2[0x80];
 
+static std::u16string encode_out;
+static std::string translit_in;
+static std::string translit_out;
+
 static void encode() {
 	if (GetWindowTextLengthW(hedit_char) < 0x10000 - 1) {
 		GetWindowTextW(hedit_char, buff_in, 0x10000);
@@ -76,8 +80,10 @@ static void encode() {
 		auto&e = lovestringh::all_encoders[sel_encoding];
 		auto const es =
 			e.styles[SendMessageW(hcbox_escape[sel_encoding], CB_GETCURSEL, 0, 0)].escape;
-		auto const out = e.encode(in_v, ne_v, es);
-		SetWindowTextW(hedit_byte, reinterpret_cast<LPCWSTR>(out.c_str()));
+			
+		encode_out.clear();
+		e.encode(in_v, ne_v, es, encode_out);
+		SetWindowTextW(hedit_byte, reinterpret_cast<LPCWSTR>(encode_out.c_str()));
 	}
 	else SetWindowTextW(hedit_byte, reinterpret_cast<LPCWSTR>(ERR_TOO_LONG));
 }
@@ -86,10 +92,33 @@ static void decode() {
 	if (GetWindowTextLengthW(hedit_byte) < 0x10000 - 1) {
 		GetWindowTextW(hedit_byte, buff_in, 0x10000);
 		std::u16string_view const in_v(reinterpret_cast<char16_t const*>(buff_in));
-		auto const out = lovestringh::all_encoders[sel_encoding].decode(in_v);
-		SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(out.c_str()));
+		
+		encode_out.clear();
+		lovestringh::all_encoders[sel_encoding].decode(in_v, encode_out);
+		SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(encode_out.c_str()));
 	}
 	else SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(ERR_TOO_LONG));
+}
+
+static void translit() {
+	if (GetWindowTextLengthW(hedit_roman) < 0x10000 - 1) {
+		GetWindowTextW(hedit_roman, buff_in, 0x10000);
+		int const len = WideCharToMultiByte(
+			CP_UTF8, 0, buff_in, -1, nullptr, 0, nullptr, nullptr);
+		translit_in.resize(len);
+		WideCharToMultiByte(
+			CP_UTF8, 0, buff_in, -1, translit_in.data(), len, nullptr, nullptr);
+			
+		translit_out.clear();
+		lovestringh::all_translits[sel_script].translit(translit_in, translit_out);
+		int const len2 = MultiByteToWideChar(CP_UTF8, 0, translit_out.c_str(), -1, nullptr, 0);
+		if (len2 <= 0x10000) {
+			MultiByteToWideChar(CP_UTF8, 0, translit_out.c_str(), -1, buff_in, len2);
+			SetWindowTextW(hedit_nonroman, buff_in);
+		}
+		else SetWindowTextW(hedit_nonroman, ERR_TOO_LONG);
+	}
+	else SetWindowTextW(hedit_nonroman, ERR_TOO_LONG);
 }
 
 static void change_tab(size_t sel) {
@@ -361,23 +390,7 @@ static LRESULT CALLBACK wndproc_translit(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			sel_script = SendMessageW(hcbox_script, CB_GETCURSEL, 0, 0);
 			[[fallthrough]];
 		case MAKEWPARAM(ID_EDIT_ROMAN, EN_UPDATE):
-			if (GetWindowTextLengthW(hedit_roman) < 0x10000 - 1) {
-				GetWindowTextW(hedit_roman, buff_in, 0x10000);
-				int const len = WideCharToMultiByte(
-					CP_UTF8, 0, buff_in, -1, nullptr, 0, nullptr, nullptr);
-				std::string in;
-				in.resize(len);
-				WideCharToMultiByte(
-					CP_UTF8, 0, buff_in, -1, in.data(), len, nullptr, nullptr);
-				auto const out = lovestringh::all_translits[sel_script].translit(in);
-				int const len2 = MultiByteToWideChar(CP_UTF8, 0, out.c_str(), -1, nullptr, 0);
-				if (len2 <= 0x10000) {
-					MultiByteToWideChar(CP_UTF8, 0, out.c_str(), -1, buff_in, len2);
-					SetWindowTextW(hedit_nonroman, buff_in);
-				}
-				else SetWindowTextW(hedit_nonroman, ERR_TOO_LONG);
-			}
-			else SetWindowTextW(hedit_nonroman, ERR_TOO_LONG);
+			translit();
 			return 0;
 		}
 	}

@@ -62,17 +62,19 @@ namespace lovestringh {
 
 		bool has_charset() const;
 
-		std::u8string encode(
+		void encode(
 			std::u8string_view s,
 			std::u8string_view exclude,
-			std::string(*escape)(uint32_t)) const;
-		std::u16string encode(
+			std::string(*escape)(uint32_t),
+			std::u8string&out) const;
+		void encode(
 			std::u16string_view s,
 			std::u16string_view exclude,
-			std::string(*escape)(uint32_t)) const;
+			std::string(*escape)(uint32_t),
+			std::u16string&out) const;
 
-		std::u8string decode(std::u8string_view s) const;
-		std::u16string decode(std::u16string_view s) const;
+		void decode(std::u8string_view s, std::u8string&out) const;
+		void decode(std::u16string_view s, std::u16string&out) const;
 
 	private:
 		void decode_piece(std::vector<char>&bs, std::u8string&s_out) const;

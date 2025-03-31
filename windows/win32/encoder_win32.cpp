@@ -1,25 +1,21 @@
-#ifndef _WIN32
-#error non-win32
-#endif
-
 #include"../encoder.hpp"
 
+#include"../constdict.hpp"
 #include<Windows.h>
-
 #include<map>
 
-static std::map<std::string_view, UINT>const dict_codepage = {
+constexpr static ConstDict<std::string_view, UINT>::Dict dict_codepage({
 	{ lovestringh::Encoder::NAME_Big5, 950 },
 	{ lovestringh::Encoder::NAME_EUC_JP, 20932 },
 	{ lovestringh::Encoder::NAME_EUC_KR, 51949 },
 	{ lovestringh::Encoder::NAME_GB18030, 54936 },
 	{ lovestringh::Encoder::NAME_GB2312, 936 },
 	{ lovestringh::Encoder::NAME_Shift_JIS, 932 },
-};
+});
 
 bool lovestringh::Encoder::has_charset() const {
-	if (auto const i = dict_codepage.find(name); i != dict_codepage.end()) {
-		return IsValidCodePage(i->second);
+	if (auto const cpn = dict_codepage[name]; cpn != nullptr) {
+		return IsValidCodePage(*cpn);
 	}
 	else return true;
 }
@@ -52,7 +48,7 @@ std::vector<char> lovestringh::Encoder::to_charset(
 	std::string_view name,
 	std::u16string_view s)
 {
-	UINT const cp = dict_codepage.at(name);
+	UINT const cp = *dict_codepage[name];
 	int const len2 = WideCharToMultiByte(
 		cp,
 		0,
@@ -112,7 +108,7 @@ void lovestringh::Encoder::from_charset(
 	std::span<char> bs,
 	std::u16string&s_out)
 {
-	UINT const cp = dict_codepage.at(name);
+	UINT const cp = *dict_codepage[name];
 	size_t const len1 = s_out.size();
 	int const len2 = MultiByteToWideChar(
 		cp,

@@ -76,88 +76,77 @@ template<typename TChar> void append_escape(
 	std::string(*escape)(uint32_t),
 	uint32_t cp)
 {
-	if constexpr (sizeof(TChar) == sizeof(char)) {
-		auto const s = escape(cp);
-		auto const start = reinterpret_cast<TChar const*>(s.data());
-		result.append(start, s.length());
-	}
-	else {
-		for (unsigned char const c : escape(cp))
-			result.push_back(static_cast<TChar>(c));
-	}
+	for (unsigned char const c : escape(cp))
+		result.push_back(static_cast<TChar>(c));
 }
 
-std::u8string lovestringh::Encoder::encode(
+void lovestringh::Encoder::encode(
 	std::u8string_view s,
 	std::u8string_view exclude,
-	std::string(*escape)(uint32_t)) const
+	std::string(*escape)(uint32_t),
+	std::u8string&out) const
 {
-	std::u8string result;
-
 	char8_t const*clast = s.data(), *const cend = clast + s.length();
 	for (auto s_sub : Pseudoregex(std::u8string_view(clast, cend), exclude)) {
 		char8_t const*const csubbegin = s_sub.data();
 		char8_t const*const csubend = csubbegin + s_sub.length();
-		if (clast < csubbegin) result.append(clast, csubbegin);
+		if (clast < csubbegin) out.append(clast, csubbegin);
 
 		if (name == NAME_UTF8) {
 			for (char8_t const*c = csubbegin; c < csubend; ++c)
-				append_escape(result, escape, static_cast<unsigned char>(*c));
+				append_escape(out, escape, static_cast<unsigned char>(*c));
 		}
 		else if (name == NAME_UTF32 || name == NAME_UTF16) {
 			for (char8_t const*c = csubbegin; c < csubend;) {
 				uint32_t const codepoint = u8u32(&c, csubend);
 				if (codepoint > 0x10000 && codepoint < 0x110000 && name == NAME_UTF16) {
-					append_escape(result, escape, u16sur1(codepoint));
-					append_escape(result, escape, u16sur2(codepoint));
+					append_escape(out, escape, u16sur1(codepoint));
+					append_escape(out, escape, u16sur2(codepoint));
 				}
-				else append_escape(result, escape, codepoint);
+				else append_escape(out, escape, codepoint);
 			}
 		}
 		else for (unsigned char uc : to_charset(name, std::u8string_view(csubbegin, csubend)))
-			append_escape(result, escape, uc);
+			append_escape(out, escape, uc);
 
 		clast = csubend;
 	}
-	if (clast < cend) result.append(clast, cend);
-
-	return result;
+	if (clast < cend) out.append(clast, cend);
 }
 
-std::u16string lovestringh::Encoder::encode(
+void lovestringh::Encoder::encode(
 	std::u16string_view s,
 	std::u16string_view exclude,
-	std::string(*escape)(uint32_t)) const
+	std::string(*escape)(uint32_t),
+	std::u16string&out) const
 {
-	std::u16string result;
-
 	char16_t const*clast = s.data(), *const cend = clast + s.length();
 	for (auto s_sub : Pseudoregex(std::u16string_view(clast, cend), exclude)) {
 		char16_t const*const csubbegin = s_sub.data();
 		char16_t const*const csubend = csubbegin + s_sub.length();
 		if (clast < csubbegin)
-			result.append(clast, csubbegin);
+			out.append(clast, csubbegin);
 
 		if (name == NAME_UTF16) {
 			for (char16_t const*c = csubbegin; c < csubend; ++c)
-				append_escape(result, escape, *c);
+				append_escape(out, escape, *c);
 		}
 		else if (name == NAME_UTF32) {
             char16_t surrogate = 0;
 			for (char16_t const*c = csubbegin; c < csubend; ++c) {
 				if (surrogate != 0) {
 					if (*c >= 0xDC00U && *c < 0xE000U) {
-						append_escape(result, escape, u16sur(surrogate, *c));
+						append_escape(out, escape, u16sur(surrogate, *c));
 						surrogate = 0;
 						continue;
 					}
 					else {
-						append_escape(result, escape, surrogate);
+						append_escape(out, escape, surrogate);
 						surrogate = 0;
 					}
 				}
 				if (*c >= 0xD800U && *c < 0xDC00U) surrogate = *c;
-				else append_escape(result, escape, *c);
+				else append_escape(out, escape, *c);
 			}
 		}
 		else if (name == NAME_UTF8) {
@@ -175,38 +164,34 @@ std::u16string lovestringh::Encoder::encode(
 			for (char16_t const*c = csubbegin; c < csubend; ++c) {
 				if (surrogate != 0) {
 					if (*c >= 0xDC00U && *c < 0xE000U) {
-						result_append(result, escape, u16sur(surrogate, *c));
+						result_append(out, escape, u16sur(surrogate, *c));
 						surrogate = 0;
 						continue;
 					}
 					else {
-						result_append(result, escape, surrogate);
+						result_append(out, escape, surrogate);
 						surrogate = 0;
 					}
 				}
 				if (*c >= 0xD800U && *c < 0xDC00U) surrogate = *c;
-				else result_append(result, escape, *c);
+				else result_append(out, escape, *c);
 			}
 		}
 		else for (unsigned char const uc : to_charset(name, std::u16string_view(csubbegin, csubend)))
-			append_escape(result, escape, uc);
+			append_escape(out, escape, uc);
 
 		clast = csubend;
 	}
-	if (clast < cend) result.append(clast, cend);
-
-	return result;
+	if (clast < cend) out.append(clast, cend);
 }
 
-std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
+void lovestringh::Encoder::decode(std::u8string_view s, std::u8string&out) const {
 	auto const toi = +[](std::u8string_view v, int radix)->uint32_t {
 		uint32_t c = 0xFFFD;
 		auto const start = reinterpret_cast<char const*>(v.data());
 		std::from_chars(start, start + v.size(), c, radix);
 		return c;
 	};
-
-	std::u8string result;
 
 	char8_t const*last_end = s.data();
 	char8_t const*const end = last_end + s.length();
@@ -221,8 +206,8 @@ std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 		"&#x([A-Fa-f0-9]{1,8});">(last_end, end))
 	{
 		if (char8_t const*const begin = m.begin(); last_end < begin) {
-			decode_piece(bs, result);
-			result.append(last_end, begin);
+			decode_piece(bs, out);
+			out.append(last_end, begin);
 		}
 
 		static_assert(sizeof(long) == sizeof(uint32_t));
@@ -232,7 +217,7 @@ std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 		else if (m.get<2>()) c = toi(m.get<2>().to_view(), 16);
 		else if (m.get<3>()) c = toi(m.get<3>().to_view(), 16);
 		else {
-			decode_piece(bs, result);
+			decode_piece(bs, out);
 
 			uint32_t const c_whole =
 				m.get<4>() ? toi(m.get<4>().to_view(), 16) :
@@ -241,11 +226,11 @@ std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 				toi(m.get<7>().to_view(), 16);
 
 			if (c_whole < 0x110000) {
-				size_t const len = result.length();
-				result.resize(len + 4, '\0');
-				result.resize(len + u32u8(c_whole, result.data() + len));
+				size_t const len = out.length();
+				out.resize(len + 4, '\0');
+				out.resize(len + u32u8(c_whole, out.data() + len));
 			}
-			else result.append(u8"\uFFFD");
+			else out.append(u8"\uFFFD");
 			last_end = m.end();
 			continue;
 		}
@@ -271,12 +256,11 @@ std::u8string lovestringh::Encoder::decode(std::u8string_view s) const {
 		}
 		last_end = m.end();
 	}
-	decode_piece(bs, result);
-	if (last_end < end) result.append(last_end, end);
-	return result;
+	decode_piece(bs, out);
+	if (last_end < end) out.append(last_end, end);
 }
 
-std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
+void lovestringh::Encoder::decode(std::u16string_view s, std::u16string&out) const {
 	auto const toi = +[](std::u16string_view v, int radix)->uint32_t {
 		uint32_t c = 0xFFFD;
 		std::vector<char> vc;
@@ -286,9 +270,7 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 		std::from_chars(start, start + vc.size(), c, radix);
 		return c;
 	};
-
-	std::u16string result;
-
+	
 	char16_t const*last_end = s.data();
 	char16_t const*const end = last_end + s.length();
 	std::vector<char>bs;
@@ -302,8 +284,8 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 		"&#x([A-Fa-f0-9]{1,8});">(last_end, end))
 	{
 		if (char16_t const*const begin = m.begin(); last_end < begin) {
-			decode_piece(bs, result);
-			result.append(last_end, begin);
+			decode_piece(bs, out);
+			out.append(last_end, begin);
 		}
 
 		static_assert(sizeof(long) == sizeof(uint32_t));
@@ -313,7 +295,7 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 		else if (m.get<2>()) c = toi(m.get<2>().to_view(), 16);
 		else if (m.get<3>()) c = toi(m.get<3>().to_view(), 16);
 		else {
-			decode_piece(bs, result);
+			decode_piece(bs, out);
 
 			uint32_t const c_whole =
 				m.get<4>() ? toi(m.get<4>().to_view(), 16) :
@@ -323,14 +305,14 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 
 			if (c_whole < 0x110000) {
 				if (c_whole >= 0x10000 && c_whole < 0x110000) {
-					result.append({
+					out.append({
 						static_cast<char16_t>(u16sur1(c_whole)),
 						static_cast<char16_t>(u16sur2(c_whole)),
 					});
 				}
-				else result.push_back(static_cast<char16_t>(c_whole));
+				else out.push_back(static_cast<char16_t>(c_whole));
 			}
-			else result.append(u"\uFFFD");
+			else out.append(u"\uFFFD");
 			last_end = m.end();
 			continue;
 		}
@@ -356,9 +338,8 @@ std::u16string lovestringh::Encoder::decode(std::u16string_view s) const {
 		}
 		last_end = m.end();
 	}
-	decode_piece(bs, result);
-	if (last_end < end) result.append(last_end, end);
-	return result;
+	decode_piece(bs, out);
+	if (last_end < end) out.append(last_end, end);
 }
 
 void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u8string&s_out) const {
