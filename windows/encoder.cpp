@@ -66,7 +66,7 @@ template<typename TChar> struct Pseudoregex {
 	Iter end() const {
 		return {
 			.s = s,
-			.citer = boost::cregex_iterator()
+			.citer{},
 		};
 	}
 };
@@ -83,7 +83,7 @@ template<typename TChar> void append_escape(
 void lovestringh::Encoder::encode(
 	std::u8string_view s,
 	std::u8string_view exclude,
-	std::string(*escape)(uint32_t),
+	std::basic_string<char>(*escape)(uint32_t),
 	std::u8string&out) const
 {
 	char8_t const*clast = s.data(), *const cend = clast + s.length();

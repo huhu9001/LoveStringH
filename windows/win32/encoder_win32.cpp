@@ -2,7 +2,6 @@
 
 #include"../constdict.hpp"
 #include<Windows.h>
-#include<map>
 
 constexpr static ConstDict<std::string_view, UINT>::Dict dict_codepage({
 	{ lovestringh::Encoder::NAME_Big5, 950 },

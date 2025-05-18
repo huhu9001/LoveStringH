@@ -37,6 +37,8 @@ static HWND hcbox_encoding;
 static size_t sel_encoding;
 static constexpr size_t NUM_ENCODERS =
 	sizeof(lovestringh::all_encoders) / sizeof(*lovestringh::all_encoders);
+static size_t NUM_ENCODERS_VALID;
+static size_t sel_encoding_map[NUM_ENCODERS];
 static constexpr size_t ID_CBOX_ESCAPE_FIRST = 205;
 static HWND hcbox_escape[NUM_ENCODERS];
 static_assert(ID_CBOX_ESCAPE_FIRST + NUM_ENCODERS <= 300);
@@ -48,17 +50,21 @@ static HWND hedit_nonroman;
 static constexpr size_t ID_CBOX_SCRIPT = 302;
 static HWND hcbox_script;
 static size_t sel_script;
+static constexpr size_t NUM_SCRIPTS = 
+	sizeof(lovestringh::all_translits) / sizeof(*lovestringh::all_translits);
 
 static constexpr int HK_F2 = 500;
 static constexpr int HK_F3 = 501;
 static constexpr int HK_CTRL_A = 502;
-static constexpr int HK_ALT_Z = 503;
-static constexpr int HK_ALT_X = 504;
-static constexpr int HK_ALT_L = 505;
-static constexpr int HK_ALT_G = 506;
-static constexpr int HK_ALT_R = 507;
-static constexpr int HK_ALT_A = 508;
-static constexpr int HK_ALT_K = 509;
+static constexpr int HK_ALT_UP = 503;
+static constexpr int HK_ALT_DOWN = 504;
+static constexpr int HK_ALT_Z = 505;
+static constexpr int HK_ALT_X = 506;
+static constexpr int HK_ALT_L = 507;
+static constexpr int HK_ALT_G = 508;
+static constexpr int HK_ALT_R = 509;
+static constexpr int HK_ALT_A = 510;
+static constexpr int HK_ALT_K = 511;
 
 static wchar_t buff_in[0x10000];
 static wchar_t buff_in2[0x80];
@@ -77,7 +83,7 @@ static void encode() {
 		else buff_in2[0] = 0;
 		std::u16string_view const ne_v(reinterpret_cast<char16_t const*>(buff_in2));
 
-		auto&e = lovestringh::all_encoders[sel_encoding];
+		auto&e = lovestringh::all_encoders[sel_encoding_map[sel_encoding]];
 		auto const es =
 			e.styles[SendMessageW(hcbox_escape[sel_encoding], CB_GETCURSEL, 0, 0)].escape;
 			
@@ -94,7 +100,8 @@ static void decode() {
 		std::u16string_view const in_v(reinterpret_cast<char16_t const*>(buff_in));
 		
 		encode_out.clear();
-		lovestringh::all_encoders[sel_encoding].decode(in_v, encode_out);
+		lovestringh::all_encoders[sel_encoding_map[sel_encoding]]
+			.decode(in_v, encode_out);
 		SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(encode_out.c_str()));
 	}
 	else SetWindowTextW(hedit_char, reinterpret_cast<LPCWSTR>(ERR_TOO_LONG));
@@ -126,6 +133,17 @@ static void change_tab(size_t sel) {
 		ShowWindow(hwnd_tabs_main[sel_tab_main], SW_HIDE);
 		ShowWindow(hwnd_tabs_main[sel], SW_SHOW);
 		sel_tab_main = sel;
+	}
+}
+
+static void change_encoder(size_t sel) {
+	if (sel_encoding != sel) {
+		SendMessageW(hcbox_encoding, CB_SETCURSEL, sel, 0);
+		PostMessageW(
+			hwnd_tabs_main[0],
+			WM_COMMAND,
+			MAKEWPARAM(ID_CBOX_ENCODING, CBN_SELCHANGE),
+			reinterpret_cast<LPARAM>(hcbox_encoding));
 	}
 }
 
@@ -187,6 +205,7 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			hinstance,
 			nullptr);
 
+		size_t i_valid = 0;
 		for (size_t i = 0; i < NUM_ENCODERS; ++i) {
 			auto const&e = lovestringh::all_encoders[i];
 			if (e.has_charset()) {
@@ -201,14 +220,14 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 					0,
 					reinterpret_cast<LPARAM>(buff_in));
 
-				hcbox_escape[i] = CreateWindowW(
+				hcbox_escape[i_valid] = CreateWindowW(
 					L"COMBOBOX",
 					nullptr,
 					CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED,
 					0, 0,
 					0, 0,
 					hWnd,
-					reinterpret_cast<HMENU>(ID_CBOX_ESCAPE_FIRST + i),
+					reinterpret_cast<HMENU>(ID_CBOX_ESCAPE_FIRST + i_valid),
 					hinstance,
 					nullptr);
 				for (auto const&ec : e.styles) {
@@ -218,15 +237,19 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 					std::copy(start, end, buff_in);
 					buff_in[len] = 0;
 					SendMessageW(
-						hcbox_escape[i],
+						hcbox_escape[i_valid],
 						CB_ADDSTRING,
 						0,
 						reinterpret_cast<LPARAM>(buff_in));
 				}
-				SendMessageW(hcbox_escape[i], CB_SETCURSEL, 0, 0);
+				SendMessageW(hcbox_escape[i_valid], CB_SETCURSEL, 0, 0);
+
+				sel_encoding_map[i_valid] = i;
+				++i_valid;
 			}
-			else hcbox_escape[i] = nullptr;
 		}
+		NUM_ENCODERS_VALID = i_valid;
+
 		SendMessageW(hcbox_encoding, CB_SETCURSEL, 0, 0);
 		sel_encoding = 0;
 		ShowWindow(hcbox_escape[0], SW_SHOW);
@@ -300,17 +323,13 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			return 0;
 		case MAKEWPARAM(ID_CBOX_ENCODING, CBN_SELCHANGE): {
 			size_t const sel = SendMessageW(hcbox_encoding, CB_GETCURSEL, 0, 0);
-			size_t const sel_real =
-				sel - std::count_if(hcbox_escape, hcbox_escape + sel, +[](HWND h) {
-					return h == 0;
-				});
-			if (sel_real != sel_encoding) {
+			if (sel != sel_encoding) {
 				ShowWindow(hcbox_escape[sel_encoding], SW_HIDE);
-				ShowWindow(hcbox_escape[sel_real], SW_SHOW);
-				sel_encoding = sel_real;
+				ShowWindow(hcbox_escape[sel], SW_SHOW);
+				sel_encoding = sel;
+				if (SendMessageW(hb_reencode, BM_GETCHECK, 0, 0)) encode();
+				else decode();
 			}
-			if (SendMessageW(hb_reencode, BM_GETCHECK, 0, 0)) encode();
-			else decode();
 		} return 0;
 		}
 	}
@@ -558,6 +577,20 @@ static LRESULT CALLBACK wndproc_main(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 				|| hedit == hedit_byte
 				|| hedit == hedit_roman) SendMessageW(hedit, EM_SETSEL, 0, -1);
 		} return 0;
+		case MAKEWPARAM(HK_ALT_UP, 1): {
+			HWND const hedit = GetFocus();
+			if (hedit == hedit_char || hedit == hedit_byte)
+				change_encoder((sel_encoding > 0 ? sel_encoding : NUM_ENCODERS_VALID) - 1);
+			else if (hedit == hedit_roman)
+				change_script((sel_script > 0 ? sel_script : NUM_SCRIPTS) - 1);
+		} return 0;
+		case MAKEWPARAM(HK_ALT_DOWN, 1): {
+			HWND const hedit = GetFocus();
+			if (hedit == hedit_char || hedit == hedit_byte)
+				change_encoder(sel_encoding < NUM_ENCODERS_VALID - 1 ? sel_encoding + 1 : 0);
+			else if (hedit == hedit_roman)
+				change_script(sel_script < NUM_SCRIPTS - 1 ? sel_script + 1 : 0);
+		} return 0;
 		case MAKEWPARAM(HK_ALT_Z, 1):
 			SendMessageW(htab_main, TCM_SETCURSEL, 0, 0);
 			change_tab(0);
@@ -635,6 +668,16 @@ int main(int, char**) {
 			.fVirt = FVIRTKEY | FCONTROL,
 			.key = 'A',
 			.cmd = HK_CTRL_A,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = VK_UP,
+			.cmd = HK_ALT_UP,
+		},
+		{
+			.fVirt = FVIRTKEY | FALT,
+			.key = VK_DOWN,
+			.cmd = HK_ALT_DOWN,
 		},
 		{
 			.fVirt = FVIRTKEY | FALT,
