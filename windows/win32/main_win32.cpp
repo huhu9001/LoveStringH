@@ -209,16 +209,11 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		for (size_t i = 0; i < NUM_ENCODERS; ++i) {
 			auto const&e = lovestringh::all_encoders[i];
 			if (e.has_charset()) {
-				size_t const len = e.name.length();
-				char const*start = e.name.data();
-				char const*end = start + len;
-				std::copy(start, end, buff_in);
-				buff_in[len] = 0;
 				SendMessageW(
 					hcbox_encoding,
 					CB_ADDSTRING,
 					0,
-					reinterpret_cast<LPARAM>(buff_in));
+					reinterpret_cast<LPARAM>(e.name.data()));
 
 				hcbox_escape[i_valid] = CreateWindowW(
 					L"COMBOBOX",
@@ -230,18 +225,12 @@ static LRESULT CALLBACK wndproc_encoding(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 					reinterpret_cast<HMENU>(ID_CBOX_ESCAPE_FIRST + i_valid),
 					hinstance,
 					nullptr);
-				for (auto const&ec : e.styles) {
-					size_t const len = ec.name.length();
-					char const*start = ec.name.data();
-					char const*end = start + len;
-					std::copy(start, end, buff_in);
-					buff_in[len] = 0;
+				for (auto const&ec : e.styles)
 					SendMessageW(
 						hcbox_escape[i_valid],
 						CB_ADDSTRING,
 						0,
-						reinterpret_cast<LPARAM>(buff_in));
-				}
+						reinterpret_cast<LPARAM>(ec.name.data()));
 				SendMessageW(hcbox_escape[i_valid], CB_SETCURSEL, 0, 0);
 
 				sel_encoding_map[i_valid] = i;

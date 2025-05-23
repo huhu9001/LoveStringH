@@ -71,19 +71,21 @@ template<typename TChar> struct Pseudoregex {
 	}
 };
 
-template<typename TChar> void append_escape(
-	std::basic_string<TChar>&result,
-	std::string(*escape)(uint32_t),
+template<typename TCharIn, typename TCharOut> static void append_escape(
+	std::basic_string<TCharOut>&result,
+	std::basic_string<TCharIn>(*escape)(uint32_t),
 	uint32_t cp)
 {
-	for (unsigned char const c : escape(cp))
-		result.push_back(static_cast<TChar>(c));
+	if constexpr (std::is_same_v<TCharIn, TCharOut>)
+		result.append(escape(cp));
+	else for (TCharIn const c : escape(cp))
+		result.push_back(static_cast<TCharOut>(c));
 }
 
-void lovestringh::Encoder::encode(
+template<typename TChar> void lovestringh::Encoder<TChar>::encode(
 	std::u8string_view s,
 	std::u8string_view exclude,
-	std::basic_string<char>(*escape)(uint32_t),
+	std::basic_string<TChar>(*escape)(uint32_t),
 	std::u8string&out) const
 {
 	char8_t const*clast = s.data(), *const cend = clast + s.length();
@@ -92,14 +94,14 @@ void lovestringh::Encoder::encode(
 		char8_t const*const csubend = csubbegin + s_sub.length();
 		if (clast < csubbegin) out.append(clast, csubbegin);
 
-		if (name == NAME_UTF8) {
+		if (name == NAME_UTF8()) {
 			for (char8_t const*c = csubbegin; c < csubend; ++c)
 				append_escape(out, escape, static_cast<unsigned char>(*c));
 		}
-		else if (name == NAME_UTF32 || name == NAME_UTF16) {
+		else if (name == NAME_UTF32() || name == NAME_UTF16()) {
 			for (char8_t const*c = csubbegin; c < csubend;) {
 				uint32_t const codepoint = u8u32(&c, csubend);
-				if (codepoint > 0x10000 && codepoint < 0x110000 && name == NAME_UTF16) {
+				if (codepoint > 0x10000 && codepoint < 0x110000 && name == NAME_UTF16()) {
 					append_escape(out, escape, u16sur1(codepoint));
 					append_escape(out, escape, u16sur2(codepoint));
 				}
@@ -114,10 +116,21 @@ void lovestringh::Encoder::encode(
 	if (clast < cend) out.append(clast, cend);
 }
 
-void lovestringh::Encoder::encode(
+template void lovestringh::Encoder<char>::encode(
+	std::u8string_view s,
+	std::u8string_view exclude,
+	std::string(*escape)(uint32_t),
+	std::u8string&out) const;
+template void lovestringh::Encoder<wchar_t>::encode(
+	std::u8string_view s,
+	std::u8string_view exclude,
+	std::wstring(*escape)(uint32_t),
+	std::u8string&out) const;
+
+template<typename TChar> void lovestringh::Encoder<TChar>::encode(
 	std::u16string_view s,
 	std::u16string_view exclude,
-	std::string(*escape)(uint32_t),
+	std::basic_string<TChar>(*escape)(uint32_t),
 	std::u16string&out) const
 {
 	char16_t const*clast = s.data(), *const cend = clast + s.length();
@@ -127,11 +140,11 @@ void lovestringh::Encoder::encode(
 		if (clast < csubbegin)
 			out.append(clast, csubbegin);
 
-		if (name == NAME_UTF16) {
+		if (name == NAME_UTF16()) {
 			for (char16_t const*c = csubbegin; c < csubend; ++c)
 				append_escape(out, escape, *c);
 		}
-		else if (name == NAME_UTF32) {
+		else if (name == NAME_UTF32()) {
             char16_t surrogate = 0;
 			for (char16_t const*c = csubbegin; c < csubend; ++c) {
 				if (surrogate != 0) {
@@ -149,10 +162,10 @@ void lovestringh::Encoder::encode(
 				else append_escape(out, escape, *c);
 			}
 		}
-		else if (name == NAME_UTF8) {
+		else if (name == NAME_UTF8()) {
 			auto const result_append = +[](
 				std::u16string&result,
-				std::string(*escape)(uint32_t),
+				std::basic_string<TChar>(*escape)(uint32_t),
 				uint32_t codepoint)
 			{
 				char8_t buf[4]{ 0, 0, 0, 0 };
@@ -185,7 +198,19 @@ void lovestringh::Encoder::encode(
 	if (clast < cend) out.append(clast, cend);
 }
 
-void lovestringh::Encoder::decode(std::u8string_view s, std::u8string&out) const {
+template void lovestringh::Encoder<char>::encode(
+	std::u16string_view s,
+	std::u16string_view exclude,
+	std::string(*escape)(uint32_t),
+	std::u16string&out) const;
+template void lovestringh::Encoder<wchar_t>::encode(
+	std::u16string_view s,
+	std::u16string_view exclude,
+	std::wstring(*escape)(uint32_t),
+	std::u16string&out) const;
+
+template<typename TChar>
+void lovestringh::Encoder<TChar>::decode(std::u8string_view s, std::u8string&out) const {
 	auto const toi = +[](std::u8string_view v, int radix)->uint32_t {
 		uint32_t c = 0xFFFD;
 		auto const start = reinterpret_cast<char const*>(v.data());
@@ -235,13 +260,13 @@ void lovestringh::Encoder::decode(std::u8string_view s, std::u8string&out) const
 			continue;
 		}
 
-		if (name == NAME_UTF32) {
+		if (name == NAME_UTF32()) {
 			bs.push_back(c);
 			bs.push_back(c >> 8);
 			bs.push_back(c >> 16);
 			bs.push_back(c >> 24);
 		}
-		else if (name == NAME_UTF16) {
+		else if (name == NAME_UTF16()) {
 			bs.push_back(c);
 			bs.push_back(c >> 8);
 			if (c >= 0x10000) {
@@ -260,7 +285,11 @@ void lovestringh::Encoder::decode(std::u8string_view s, std::u8string&out) const
 	if (last_end < end) out.append(last_end, end);
 }
 
-void lovestringh::Encoder::decode(std::u16string_view s, std::u16string&out) const {
+template void lovestringh::Encoder<char>::decode(std::u8string_view s, std::u8string&out) const;
+template void lovestringh::Encoder<wchar_t>::decode(std::u8string_view s, std::u8string&out) const;
+
+template<typename TChar>
+void lovestringh::Encoder<TChar>::decode(std::u16string_view s, std::u16string&out) const {
 	auto const toi = +[](std::u16string_view v, int radix)->uint32_t {
 		uint32_t c = 0xFFFD;
 		std::vector<char> vc;
@@ -317,13 +346,13 @@ void lovestringh::Encoder::decode(std::u16string_view s, std::u16string&out) con
 			continue;
 		}
 
-		if (name == NAME_UTF32) {
+		if (name == NAME_UTF32()) {
 			bs.push_back(c);
 			bs.push_back(c >> 8);
 			bs.push_back(c >> 16);
 			bs.push_back(c >> 24);
 		}
-		else if (name == NAME_UTF16) {
+		else if (name == NAME_UTF16()) {
 			bs.push_back(c);
 			bs.push_back(c >> 8);
 			if (c >= 0x10000) {
@@ -342,10 +371,15 @@ void lovestringh::Encoder::decode(std::u16string_view s, std::u16string&out) con
 	if (last_end < end) out.append(last_end, end);
 }
 
-void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u8string&s_out) const {
+
+template void lovestringh::Encoder<char>::decode(std::u16string_view s, std::u16string&out) const;
+template void lovestringh::Encoder<wchar_t>::decode(std::u16string_view s, std::u16string&out) const;
+
+template<typename TChar>
+void lovestringh::Encoder<TChar>::decode_piece(std::vector<char>&bs, std::u8string&s_out) const {
 	if (bs.empty()) return;
-	if (name == NAME_UTF8) s_out.append(reinterpret_cast<char8_t*>(bs.data()), bs.size());
-	else if (name == NAME_UTF32) {
+	if (name == NAME_UTF8()) s_out.append(reinterpret_cast<char8_t*>(bs.data()), bs.size());
+	else if (name == NAME_UTF32()) {
 		for (auto i = bs.begin(), end = bs.end() - 3; i < end; i += 4) {
 			uint32_t const codepoint =
 				static_cast<unsigned char>(i[3]) << 24 |
@@ -358,7 +392,7 @@ void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u8string&s_ou
 			s_out.resize(len + u32u8(codepoint, s_out.data() + len));
 		}
 	}
-	else if (name == NAME_UTF16) {
+	else if (name == NAME_UTF16()) {
 		uint32_t surrogate = 0U;
 		for (auto i = bs.begin(), end = bs.end() - 1; i < end; i += 2) {
 			uint32_t const codepoint =
@@ -392,9 +426,13 @@ void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u8string&s_ou
 	bs.clear();
 }
 
-void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u16string&s_out) const {
+template void lovestringh::Encoder<char>::decode_piece(std::vector<char>&bs, std::u8string&s_out) const;
+template void lovestringh::Encoder<wchar_t>::decode_piece(std::vector<char>&bs, std::u8string&s_out) const;
+
+template<typename TChar>
+void lovestringh::Encoder<TChar>::decode_piece(std::vector<char>&bs, std::u16string&s_out) const {
 	if (bs.empty()) return;
-	if (name == NAME_UTF8) {
+	if (name == NAME_UTF8()) {
 		for (auto i = static_cast<char const*>(bs.data()), end = i + bs.size(); i < end;) {
 			uint32_t const codepoint = u8u32(&i, end);
 			if (codepoint >= 0x10000 && codepoint < 0x110000) {
@@ -406,7 +444,7 @@ void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u16string&s_o
 			else s_out.push_back(static_cast<char16_t>(codepoint));
 		}
 	}
-	else if (name == NAME_UTF32) {
+	else if (name == NAME_UTF32()) {
 		for (auto i = bs.begin(), end = bs.end() - 3; i < end; i += 4) {
 			uint32_t const codepoint = static_cast<unsigned char>(i[3]) << 24
 				| static_cast<unsigned char>(i[2]) << 16
@@ -421,7 +459,7 @@ void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u16string&s_o
 			else s_out.push_back(static_cast<char16_t>(codepoint));
 		}
 	}
-	else if (name == NAME_UTF16) {
+	else if (name == NAME_UTF16()) {
 		for (auto i = bs.begin(), end = bs.end() - 1; i < end; i += 2) {
 			s_out.push_back(static_cast<unsigned char>(i[0])
 				| static_cast<unsigned char>(i[1]) << 8);
@@ -430,3 +468,6 @@ void lovestringh::Encoder::decode_piece(std::vector<char>&bs, std::u16string&s_o
 	else from_charset(name, bs, s_out);
 	bs.clear();
 }
+
+template void lovestringh::Encoder<char>::decode_piece(std::vector<char>&bs, std::u16string&s_out) const;
+template void lovestringh::Encoder<wchar_t>::decode_piece(std::vector<char>&bs, std::u16string&s_out) const;
